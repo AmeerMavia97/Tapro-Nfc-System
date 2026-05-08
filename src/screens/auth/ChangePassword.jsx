@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { Link } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 import { useMutation } from "@tanstack/react-query"
 import { useForm } from "react-hook-form"
 import { KeyRound, Loader2 } from "lucide-react"
@@ -11,7 +11,8 @@ import FormField from "@/components/ui/FormField"
 import { changePassword } from "@/services/authApi"
 
 const ChangePassword = () => {
-  const [serverMessage, setServerMessage] = useState("")
+  const [serverMessage, setServerMessage] = useState("");
+  const naviate = useNavigate()
   const {
     register,
     handleSubmit,
@@ -29,7 +30,8 @@ const ChangePassword = () => {
     mutationFn: changePassword,
     onSuccess: () => {
       reset()
-      setServerMessage("Password changed successfully. You can sign in with the new password.")
+      setServerMessage("changed")
+      naviate("/login")
     },
     onError: (error) => setServerMessage(error.message),
   })
@@ -70,9 +72,9 @@ const ChangePassword = () => {
             })}
           />
 
-          {serverMessage ? (
-            <p className="rounded-lg bg-slate-100 px-3 py-2 text-sm text-slate-700 dark:bg-slate-800 dark:text-slate-200">{serverMessage}</p>
-          ) : null}
+          {serverMessage  ? (
+            <p className={`rounded-lg   px-3 py-2 ${serverMessage === "changed" ? "bg-green-100 text-sm text-green-700" :  "bg-red-100  text-sm text-red-700" }  dark:bg-slate-800 dark:text-slate-200`}>{serverMessage === "changed" ? "Password changed successfully. You can sign in with the new password." : serverMessage }</p>
+          ) :  null}
 
           <Button
             className="h-11 w-full bg-slate-950 text-white hover:bg-slate-800 dark:bg-white dark:text-slate-950 dark:hover:bg-slate-200"

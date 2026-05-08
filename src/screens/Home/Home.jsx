@@ -2,8 +2,12 @@ import { Link } from 'react-router-dom'
 
 import { Button } from '@/components/ui/button'
 import Navbar from '@/components/Layout/Navbar/Navbar'
+import { useAuth } from '@/context/useAuth'
+import { logoutUser } from '@/services/authApi'
 
 const Home = () => {
+  const { isAuthenticated } = useAuth()
+
   return (
     <main className="flex min-h-screen items-center justify-center bg-slate-50 px-4 pt-28 transition-colors dark:bg-slate-950">
       <Navbar />
@@ -16,14 +20,29 @@ const Home = () => {
           Manage sign in, registration, password recovery, and account password changes with a polished
           Supabase-backed flow.
         </p>
-        <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
-          <Button asChild className="h-11 bg-slate-950 px-5 text-white hover:bg-slate-800 dark:bg-white dark:text-slate-950 dark:hover:bg-slate-200">
-            <Link to="/login">Sign in</Link>
-          </Button>
-          <Button asChild className="h-11 border-slate-300 px-5 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 dark:hover:bg-slate-800" variant="outline">
-            <Link to="/register">Create account</Link>
-          </Button>
-        </div>
+        {isAuthenticated ? (
+          <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
+            <Button asChild className="h-11 bg-slate-950 px-5 text-white hover:bg-slate-800 dark:bg-white dark:text-slate-950 dark:hover:bg-slate-200">
+              <Link to="/owner-dashboard">Dashboard</Link>
+            </Button>
+            <Button
+              className="h-11 border-slate-300 px-5 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 dark:hover:bg-slate-800"
+              onClick={logoutUser}
+              variant="outline"
+            >
+              Logout
+            </Button>
+          </div>
+        ) : (
+          <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
+            <Button asChild className="h-11 bg-slate-950 px-5 text-white hover:bg-slate-800 dark:bg-white dark:text-slate-950 dark:hover:bg-slate-200">
+              <Link to="/login">Sign in</Link>
+            </Button>
+            <Button asChild className="h-11 border-slate-300 px-5 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 dark:hover:bg-slate-800" variant="outline">
+              <Link to="/register">Create account</Link>
+            </Button>
+          </div>
+        )}
       </section>
     </main>
   )

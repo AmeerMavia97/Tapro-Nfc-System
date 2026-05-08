@@ -18,7 +18,7 @@
   --text: 15 23 42;
 
   /* Font Families */
-  --font-head: "Roboto Condensed";
+  --font-head: "Oswald";
   --font-para: "TASA Orbiter";
 }
 
@@ -29,6 +29,10 @@ body {
   transition: background-color 150ms ease, color 150ms ease;
 }
 
+
+h1{
+  font-family: "Oswald";
+}
 
 @theme inline {
   /* =====================
