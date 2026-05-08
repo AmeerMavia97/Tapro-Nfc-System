@@ -1,0 +1,126 @@
+import { useState } from "react"
+import { useMutation } from "@tanstack/react-query"
+import { useForm } from "react-hook-form"
+import { Loader2, UserPlus } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import AuthCard from "@/components/Cards/AuthCard"
+import AuthLayout from "@/Layout/AuthScreenLayout/AuthLayout"
+import FormField from "@/components/ui/FormField"
+import { registerUser } from "@/services/authApi"
+
+const Register = () => {
+  const [serverMessage, setServerMessage] = useState("")
+  const {
+    register,
+    handleSubmit,
+    getValues,
+    reset,
+    formState: { errors },
+  } = useForm({
+    defaultValues: {
+      fullName: "",
+      email: "",
+      password: "",
+      confirmPassword: "",
+    },
+  })
+
+  const registerMutation = useMutation({
+    mutationFn: registerUser,
+    onSuccess: () => {
+      reset()
+      setServerMessage("Account created. Check your email if confirmation is enabled.")
+    },
+    onError: (error) => setServerMessage(error.message),
+  })
+
+  return (
+    <AuthLayout>
+      <AuthCard
+        title="Create account"
+        description="Start your Tapro NFC workspace with secure account access."
+        footerText="Already have an account?"
+        footerLinkText="Sign in"
+        footerTo="/login"
+      >
+        <form
+          className="grid gap-5"
+          onSubmit={handleSubmit(({ fullName, email, password }) =>
+            registerMutation.mutate({ fullName, email, password })
+          )}
+        >
+          <FormField
+            id="fullName"
+            label="Full name"
+            placeholder="Ameer Hamza"
+            error={errors.fullName}
+            registration={register("fullName", {
+              required: "Full name is required",
+              minLength: {
+                value: 2,
+                message: "Name is too short",
+              },
+            })}
+          />
+
+          <FormField
+            id="email"
+            label="Email address"
+            type="email"
+            placeholder="you@example.com"
+            error={errors.email}
+            registration={register("email", {
+              required: "Email is required",
+              pattern: {
+                value: /^\S+@\S+\.\S+$/,
+                message: "Enter a valid email address",
+              },
+            })}
+          />
+
+          <FormField
+            id="password"
+            label="Password"
+            type="password"
+            placeholder="Minimum 6 characters"
+            error={errors.password}
+            registration={register("password", {
+              required: "Password is required",
+              minLength: {
+                value: 6,
+                message: "Password must be at least 6 characters",
+              },
+            })}
+          />
+
+          <FormField
+            id="confirmPassword"
+            label="Confirm password"
+            type="password"
+            placeholder="Repeat your password"
+            error={errors.confirmPassword}
+            registration={register("confirmPassword", {
+              required: "Confirm your password",
+              validate: (value) => value === getValues("password") || "Passwords do not match",
+            })}
+          />
+
+          {serverMessage ? (
+            <p className="rounded-lg bg-slate-100 px-3 py-2 text-sm text-slate-700 dark:bg-slate-800 dark:text-slate-200">{serverMessage}</p>
+          ) : null}
+
+          <Button
+            className="h-11 w-full bg-slate-950 text-white hover:bg-slate-800 dark:bg-white dark:text-slate-950 dark:hover:bg-slate-200"
+            disabled={registerMutation.isPending}
+            type="submit"
+          >
+            {registerMutation.isPending ? <Loader2 className="animate-spin" /> : <UserPlus />}
+            Create account
+          </Button>
+        </form>
+      </AuthCard>
+    </AuthLayout>
+  )
+}
+
+export default Register
