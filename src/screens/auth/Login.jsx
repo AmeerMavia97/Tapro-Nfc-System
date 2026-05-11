@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button"
 import AuthCard from "@/components/Cards/AuthCard"
 import AuthLayout from "@/Layout/AuthScreenLayout/AuthLayout"
 import FormField from "@/components/ui/FormField"
-import { loginUser } from "@/services/authApi"
+import { getDashboardPath, loginUser } from "@/services/authApi"
 
 const Login = () => {
   const navigate = useNavigate()
@@ -26,9 +26,10 @@ const Login = () => {
 
   const loginMutation = useMutation({
     mutationFn: loginUser,
-    onSuccess: () => {
+    onSuccess: ({ user }) => {
       setServerMessage("Welcome back. You are signed in.")
-      navigate("/")
+      console.log(user)
+      navigate(getDashboardPath(user))
     },
     onError: (error) => setServerMessage(error.message),
   })

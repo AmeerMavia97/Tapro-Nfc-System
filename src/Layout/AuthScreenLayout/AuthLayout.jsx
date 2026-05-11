@@ -1,8 +1,4 @@
-import { LockKeyhole } from "lucide-react"
-import { Link } from "react-router-dom"
-
 import authImage from "@/assets/Mobile-login.png"
-import ThemeToggle from "@/components/ui/ThemeToggle"
 
 const AuthLayout = ({ children }) => {
   return (

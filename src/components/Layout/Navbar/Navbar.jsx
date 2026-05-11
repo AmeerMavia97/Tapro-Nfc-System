@@ -4,13 +4,14 @@ import { Link } from "react-router-dom"
 
 import ThemeToggle from "@/components/ui/ThemeToggle"
 import { useAuth } from "@/context/useAuth"
-import { logoutUser } from "@/services/authApi"
+import { getDashboardPath, logoutUser } from "@/services/authApi"
 
 const Navbar = () => {
     const [scrolled, setScrolled] = useState(false)
     const { isAuthenticated, user } = useAuth()
     const userEmail = user?.email ?? ""
     const avatarLabel = userEmail ? userEmail.charAt(0).toUpperCase() : "U"
+    const dashboardPath = getDashboardPath(user)
 
     useEffect(() => {
         const handleScroll = () => setScrolled(window.scrollY > 20)
@@ -38,7 +39,7 @@ const Navbar = () => {
                         {isAuthenticated ? (
                             <>
                                 <Link
-                                    to="/owner-dashboard"
+                                    to={dashboardPath}
                                     className="hidden h-10 items-center gap-2 rounded-lg bg-slate-950 px-4 text-sm font-semibold text-white shadow-sm transition hover:bg-slate-800 active:scale-[0.98] dark:bg-white dark:text-slate-950 dark:hover:bg-slate-200 sm:inline-flex"
                                 >
                                     <LayoutDashboard className="size-4" />
