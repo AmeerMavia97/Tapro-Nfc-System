@@ -1,13 +1,19 @@
 import { Link } from 'react-router-dom'
-
 import { Button } from '@/components/ui/button'
 import Navbar from '@/components/Layout/Navbar/Navbar'
-import { useAuth } from '@/context/useAuth'
 import { getDashboardPath, logoutUser } from '@/services/authApi'
+import { useAuthUser } from '@/components/hooks/useAuthUser'
 
 const Home = () => {
-  const { isAuthenticated, user } = useAuth()
+
+  const { data = {}, isLoading } = useAuthUser()
+  // const { user , profile  } = data;
+  const user = data?.user;
+  const profile = data?.profile;
+  const isAuthenticated = !!user;
   const dashboardPath = getDashboardPath(user)
+
+
 
   return (
     <main className="flex min-h-screen items-center justify-center bg-slate-50 px-4 pt-28 transition-colors dark:bg-slate-950">

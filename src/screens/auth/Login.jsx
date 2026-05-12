@@ -26,10 +26,10 @@ const Login = () => {
 
   const loginMutation = useMutation({
     mutationFn: loginUser,
-    onSuccess: ({ user }) => {
+    onSuccess: ({ user , profile }) => {
       setServerMessage("Welcome back. You are signed in.")
-      console.log(user)
-      navigate(getDashboardPath(user))
+      console.log(profile)
+      navigate(getDashboardPath(profile))
     },
     onError: (error) => setServerMessage(error.message),
   })

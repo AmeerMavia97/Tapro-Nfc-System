@@ -7,6 +7,7 @@ import Login from '@/screens/auth/Login'
 import Register from '@/screens/auth/Register'
 import ResetPassword from '@/screens/auth/ResetPassword'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
+import RoleProtectedRoute from '@/configuration/Router/RoleProtectedRoute'
 
 const AppRouter = () => {
   return (
@@ -17,8 +18,23 @@ const AppRouter = () => {
         <Route path="/register" element={<Register />} />
         <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/change-password" element={<ChangePassword />} />
-        <Route path="/admin-dashboard" element={<AdminDashboard />} />
-        <Route path="/owner-dashboard" element={<OwnerDashboard />} />
+        <Route
+          path="/admin-dashboard"
+          element={
+            <RoleProtectedRoute allowedRole="admin">
+              <AdminDashboard />
+            </RoleProtectedRoute>
+          }
+        />
+        <Route
+          path="/owner-dashboard"
+          element={
+            <RoleProtectedRoute allowedRole="user">
+              <OwnerDashboard />
+            </RoleProtectedRoute>
+          }
+        />
+
       </Routes>
     </BrowserRouter>
   )

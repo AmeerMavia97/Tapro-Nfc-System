@@ -1,14 +1,19 @@
-import { LayoutDashboard, LockKeyhole, LogOut } from "lucide-react"
-import { useEffect, useState } from "react"
 import { Link } from "react-router-dom"
-
+import { useEffect, useState } from "react"
 import ThemeToggle from "@/components/ui/ThemeToggle"
-import { useAuth } from "@/context/useAuth"
+import { useAuthUser } from "@/components/hooks/useAuthUser"
 import { getDashboardPath, logoutUser } from "@/services/authApi"
+import { LayoutDashboard, LockKeyhole, LogOut } from "lucide-react"
+
 
 const Navbar = () => {
     const [scrolled, setScrolled] = useState(false)
-    const { isAuthenticated, user } = useAuth()
+    const { data = {}, isLoading } = useAuthUser()
+    const user = data?.user;
+    const profile = data?.profile;
+    const isAuthenticated = !!user;
+
+    // EXTRACT USER DATA TO SHOW 
     const userEmail = user?.email ?? ""
     const avatarLabel = userEmail ? userEmail.charAt(0).toUpperCase() : "U"
     const dashboardPath = getDashboardPath(user)
@@ -21,6 +26,7 @@ const Navbar = () => {
 
     const handleLogout = async () => {
         await logoutUser()
+        queryClient.setQueryData(["auth-user"], null)
     }
 
     return (

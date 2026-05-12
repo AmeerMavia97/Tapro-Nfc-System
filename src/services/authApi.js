@@ -1,3 +1,4 @@
+import getAuthErrorMessage from "@/components/hooks/ErrorMessage"
 import { supabase } from "@/configuration/Supabase/supabaseClient"
 
 const authRedirectUrl = `${window.location.origin}/change-password`
@@ -6,61 +7,65 @@ export function getUserRole(profile) {
   return profile?.role || "user"
 }
 
-export function getDashboardPath(user) {
-  return getUserRole(user) === "admin" ? "/admin-dashboard" : "/owner-dashboard"
+export function getDashboardPath(profile) {
+  return profile?.role === "admin"
+    ? "/admin-dashboard"
+    : "/owner-dashboard"
 }
 
-function getAuthErrorMessage(message) {
-  const normalizedMessage = message.toLowerCase()
 
-  if (
-    normalizedMessage.includes("already registered") ||
-    normalizedMessage.includes("already exists") ||
-    normalizedMessage.includes("user already")
-  ) {
-    return "This email already exists. Please sign in instead."
-  }
 
-  return message
-}
-
+// Login User 
 export async function loginUser({ email, password }) {
-  // 1. Login user (auth only)
   const { data, error } = await supabase.auth.signInWithPassword({
     email,
     password,
   })
 
   if (error) {
-    throw new Error(getAuthErrorMessage(error.message))
+    throw new Error(error.message)
   }
 
   const user = data.user
+  const session = data.session
 
-  // 2. Get role from your DB table
-  const { data: userData, error: userError } = await supabase
-    .from("users")
+  const { data: sessionData } = await supabase.auth.getSession()
+
+  if (!sessionData?.session) {
+    throw new Error("Session not available after login")
+  }
+
+  const { data: profile, error: profileError } = await supabase
+    .from("profiles")
     .select("role, full_name, email")
     .eq("id", user.id)
     .single()
 
-  if (userError) {
-    throw new Error(userError.message)
+  if (profileError) {
+    throw new Error(profileError.message)
   }
 
-  // 3. Return combined response
+  console.log(profile);
+  
+
   return {
     user,
-    profile: userData,
-    session: data.session,
+    profile,
+    session,
   }
 }
 
-export async function registerUser({ fullName, email, password }) {
+// Register User Function 
+export async function registerUser({
+  fullName,
+  email,
+  password,
+}) {
   const { data, error } = await supabase.auth.signUp({
     email,
     password,
     options: {
+      emailRedirectTo: `${window.location.origin}/login`,
       data: {
         full_name: fullName,
       },
@@ -68,12 +73,17 @@ export async function registerUser({ fullName, email, password }) {
   })
 
   if (error) {
-    throw new Error(error.message)
+    throw new Error(getAuthErrorMessage(error.message))
+  }
+
+  if (!data?.user || data?.user?.identities?.length === 0) {
+    throw new Error("This email already exists. Please sign in instead.")
   }
 
   return data
 }
 
+// Reset Password 
 export async function sendResetPasswordEmail({ email }) {
   const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
     redirectTo: authRedirectUrl,
@@ -96,6 +106,8 @@ export async function changePassword({ password }) {
   return data
 }
 
+
+// Logout User 
 export async function logoutUser() {
   const { error } = await supabase.auth.signOut()
 
@@ -105,16 +117,23 @@ export async function logoutUser() {
 }
 
 
-export async function getCurrentUserData(userId) {
-  const { data, error } = await supabase
-    .from("users")
+export async function fetchCurrentUser() {
+  const { data: sessionData } = await supabase.auth.getSession()
+
+  const user = sessionData?.session?.user
+
+  if (!user) return null
+
+  const { data: profile, error } = await supabase
+    .from("profiles")
     .select("*")
-    .eq("id", userId)
+    .eq("id", user.id)
     .single()
 
-  if (error) {
-    throw error
-  }
+  if (error) throw error
 
-  return data
+  return {
+    user,
+    profile,
+  }
 }

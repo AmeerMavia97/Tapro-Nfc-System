@@ -1,6 +1,6 @@
+import { ThemeContext } from "@/lib/theme"
 import { useEffect, useMemo, useState } from "react"
 
-import { ThemeContext } from "@/context/theme"
 
 const getInitialTheme = () => {
   if (typeof window === "undefined") return "light"
