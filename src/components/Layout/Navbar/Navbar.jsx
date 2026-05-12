@@ -5,6 +5,7 @@ import ThemeToggle from "@/components/ui/ThemeToggle"
 import { AUTH_USER_QUERY_KEY, useAuthUser } from "@/components/hooks/useAuthUser"
 import { getDashboardPath, logoutUser } from "@/services/authApi"
 import { LayoutDashboard, LockKeyhole, LogOut } from "lucide-react"
+import Logout from "@/components/Layout/Logout/Logout"
 
 
 const Navbar = () => {
@@ -61,14 +62,7 @@ const Navbar = () => {
                                 >
                                     {avatarLabel}
                                 </span>
-                                <button
-                                    className="flex size-10 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-700 transition hover:bg-slate-100 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800"
-                                    onClick={handleLogout}
-                                    title="Logout"
-                                    type="button"
-                                >
-                                    <LogOut className="size-4" />
-                                </button>
+                               <Logout/>
                             </>
                         ) : (
                             <Link
