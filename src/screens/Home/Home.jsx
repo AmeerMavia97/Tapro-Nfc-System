@@ -1,17 +1,20 @@
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
+import { useQueryClient } from '@tanstack/react-query'
 import Navbar from '@/components/Layout/Navbar/Navbar'
 import { getDashboardPath, logoutUser } from '@/services/authApi'
-import { useAuthUser } from '@/components/hooks/useAuthUser'
+import { AUTH_USER_QUERY_KEY, useAuthUser } from '@/components/hooks/useAuthUser'
 
 const Home = () => {
 
+  const navigate = useNavigate()
+  const queryClient = useQueryClient()
   const { data = {}, isLoading } = useAuthUser()
   // const { user , profile  } = data;
   const user = data?.user;
   const profile = data?.profile;
   const isAuthenticated = !!user;
-  const dashboardPath = getDashboardPath(user)
+  const dashboardPath = getDashboardPath(profile)
 
 
 
@@ -34,7 +37,11 @@ const Home = () => {
             </Button>
             <Button
               className="h-11 border-slate-300 px-5 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 dark:hover:bg-slate-800"
-              onClick={logoutUser}
+              onClick={async () => {
+                await logoutUser()
+                queryClient.setQueryData(AUTH_USER_QUERY_KEY, null)
+                navigate("/login", { replace: true })
+              }}
               variant="outline"
             >
               Logout

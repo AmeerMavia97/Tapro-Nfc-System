@@ -1,6 +1,6 @@
 import { useState } from "react"
 import { Link, useNavigate } from "react-router-dom"
-import { useMutation } from "@tanstack/react-query"
+import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { useForm } from "react-hook-form"
 import { ArrowRight, Loader2 } from "lucide-react"
 
@@ -8,10 +8,12 @@ import { Button } from "@/components/ui/button"
 import AuthCard from "@/components/Cards/AuthCard"
 import AuthLayout from "@/Layout/AuthScreenLayout/AuthLayout"
 import FormField from "@/components/ui/FormField"
+import { AUTH_USER_QUERY_KEY } from "@/components/hooks/useAuthUser"
 import { getDashboardPath, loginUser } from "@/services/authApi"
 
 const Login = () => {
   const navigate = useNavigate()
+  const queryClient = useQueryClient()
   const [serverMessage, setServerMessage] = useState("")
   const {
     register,
@@ -26,10 +28,10 @@ const Login = () => {
 
   const loginMutation = useMutation({
     mutationFn: loginUser,
-    onSuccess: ({ user , profile }) => {
+    onSuccess: (authData) => {
+      queryClient.setQueryData(AUTH_USER_QUERY_KEY, authData)
       setServerMessage("Welcome back. You are signed in.")
-      console.log(profile)
-      navigate(getDashboardPath(profile))
+      navigate(getDashboardPath(authData.profile), { replace: true })
     },
     onError: (error) => setServerMessage(error.message),
   })

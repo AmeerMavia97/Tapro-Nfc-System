@@ -1,11 +1,9 @@
 import { useAuthUser } from "@/components/hooks/useAuthUser"
 import { getDashboardPath } from "@/services/authApi"
-import { Navigate, useLocation } from "react-router-dom"
+import { Navigate } from "react-router-dom"
 
-export default function RoleProtectedRoute({ children, allowedRole }) {
-  const location = useLocation()
+export default function PublicOnlyRoute({ children }) {
   const { data, isLoading, isFetching } = useAuthUser()
-
   const user = data?.user
   const profile = data?.profile
 
@@ -17,15 +15,7 @@ export default function RoleProtectedRoute({ children, allowedRole }) {
     )
   }
 
-  if (!user) {
-    return <Navigate to="/login" replace state={{ from: location }} />
-  }
-
-  if (!profile) {
-    return <Navigate to="/login" replace />
-  }
-
-  if (profile.role !== allowedRole) {
+  if (user && profile) {
     return <Navigate to={getDashboardPath(profile)} replace />
   }
 

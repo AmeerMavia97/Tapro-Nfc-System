@@ -1,13 +1,16 @@
-import { Link } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 import { useEffect, useState } from "react"
+import { useQueryClient } from "@tanstack/react-query"
 import ThemeToggle from "@/components/ui/ThemeToggle"
-import { useAuthUser } from "@/components/hooks/useAuthUser"
+import { AUTH_USER_QUERY_KEY, useAuthUser } from "@/components/hooks/useAuthUser"
 import { getDashboardPath, logoutUser } from "@/services/authApi"
 import { LayoutDashboard, LockKeyhole, LogOut } from "lucide-react"
 
 
 const Navbar = () => {
     const [scrolled, setScrolled] = useState(false)
+    const navigate = useNavigate()
+    const queryClient = useQueryClient()
     const { data = {}, isLoading } = useAuthUser()
     const user = data?.user;
     const profile = data?.profile;
@@ -16,7 +19,7 @@ const Navbar = () => {
     // EXTRACT USER DATA TO SHOW 
     const userEmail = user?.email ?? ""
     const avatarLabel = userEmail ? userEmail.charAt(0).toUpperCase() : "U"
-    const dashboardPath = getDashboardPath(user)
+    const dashboardPath = getDashboardPath(profile)
 
     useEffect(() => {
         const handleScroll = () => setScrolled(window.scrollY > 20)
@@ -26,7 +29,8 @@ const Navbar = () => {
 
     const handleLogout = async () => {
         await logoutUser()
-        queryClient.setQueryData(["auth-user"], null)
+        queryClient.setQueryData(AUTH_USER_QUERY_KEY, null)
+        navigate("/login", { replace: true })
     }
 
     return (

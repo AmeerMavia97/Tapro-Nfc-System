@@ -2,20 +2,87 @@ import getAuthErrorMessage from "@/components/hooks/ErrorMessage"
 import { supabase } from "@/configuration/Supabase/supabaseClient"
 
 const authRedirectUrl = `${window.location.origin}/change-password`
+const AUTH_CACHE_KEY = "tapro-auth-user"
+const AUTH_CACHE_VERSION = 1
 
 export function getUserRole(profile) {
   return profile?.role || "user"
 }
 
 export function getDashboardPath(profile) {
-  return profile?.role === "admin"
-    ? "/admin-dashboard"
-    : "/owner-dashboard"
+  return profile?.role === "admin" ? "/admin-dashboard" : "/owner-dashboard"
 }
 
+function normalizeAuthPayload({ user, profile, session = null }) {
+  return {
+    user,
+    profile,
+    session,
+  }
+}
 
+export function getCachedAuthUser(userId) {
+  try {
+    const rawCache = localStorage.getItem(AUTH_CACHE_KEY)
+    if (!rawCache) return null
 
-// Login User 
+    const cached = JSON.parse(rawCache)
+
+    if (cached?.version !== AUTH_CACHE_VERSION) return null
+    if (!cached?.data?.user?.id || cached.data.user.id !== userId) return null
+
+    return cached.data
+  } catch {
+    localStorage.removeItem(AUTH_CACHE_KEY)
+    return null
+  }
+}
+
+export function setCachedAuthUser(data) {
+  if (!data?.user) return
+
+  localStorage.setItem(
+    AUTH_CACHE_KEY,
+    JSON.stringify({
+      version: AUTH_CACHE_VERSION,
+      cachedAt: Date.now(),
+      data,
+    }),
+  )
+}
+
+export function clearCachedAuthUser() {
+  localStorage.removeItem(AUTH_CACHE_KEY)
+}
+
+export async function refreshCurrentUser() {
+  const { data: sessionData } = await supabase.auth.getSession()
+  const user = sessionData?.session?.user
+
+  if (!user) {
+    clearCachedAuthUser()
+    return null
+  }
+
+  const { data: profile, error } = await supabase
+    .from("profiles")
+    .select("*")
+    .eq("id", user.id)
+    .single()
+
+  if (error) throw error
+
+  const authData = normalizeAuthPayload({
+    user,
+    profile,
+    session: sessionData.session,
+  })
+
+  setCachedAuthUser(authData)
+  return authData
+}
+
+// Login User
 export async function loginUser({ email, password }) {
   const { data, error } = await supabase.auth.signInWithPassword({
     email,
@@ -29,15 +96,13 @@ export async function loginUser({ email, password }) {
   const user = data.user
   const session = data.session
 
-  const { data: sessionData } = await supabase.auth.getSession()
-
-  if (!sessionData?.session) {
+  if (!session || !user) {
     throw new Error("Session not available after login")
   }
 
   const { data: profile, error: profileError } = await supabase
     .from("profiles")
-    .select("role, full_name, email")
+    .select("*")
     .eq("id", user.id)
     .single()
 
@@ -45,22 +110,14 @@ export async function loginUser({ email, password }) {
     throw new Error(profileError.message)
   }
 
-  console.log(profile);
-  
+  const authData = normalizeAuthPayload({ user, profile, session })
+  setCachedAuthUser(authData)
 
-  return {
-    user,
-    profile,
-    session,
-  }
+  return authData
 }
 
-// Register User Function 
-export async function registerUser({
-  fullName,
-  email,
-  password,
-}) {
+// Register User Function
+export async function registerUser({ fullName, email, password }) {
   const { data, error } = await supabase.auth.signUp({
     email,
     password,
@@ -83,7 +140,7 @@ export async function registerUser({
   return data
 }
 
-// Reset Password 
+// Reset Password
 export async function sendResetPasswordEmail({ email }) {
   const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
     redirectTo: authRedirectUrl,
@@ -106,34 +163,28 @@ export async function changePassword({ password }) {
   return data
 }
 
-
-// Logout User 
+// Logout User
 export async function logoutUser() {
   const { error } = await supabase.auth.signOut()
+
+  clearCachedAuthUser()
 
   if (error) {
     throw new Error(error.message)
   }
 }
 
-
 export async function fetchCurrentUser() {
   const { data: sessionData } = await supabase.auth.getSession()
-
   const user = sessionData?.session?.user
 
-  if (!user) return null
-
-  const { data: profile, error } = await supabase
-    .from("profiles")
-    .select("*")
-    .eq("id", user.id)
-    .single()
-
-  if (error) throw error
-
-  return {
-    user,
-    profile,
+  if (!user) {
+    clearCachedAuthUser()
+    return null
   }
+
+  const cachedAuthUser = getCachedAuthUser(user.id)
+  if (cachedAuthUser) return cachedAuthUser
+
+  return refreshCurrentUser()
 }
