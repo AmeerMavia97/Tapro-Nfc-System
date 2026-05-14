@@ -25,13 +25,7 @@ const AdminHeader = ({ title = "Dashboard" }) => {
             <Search className="size-4" />
             <span className="text-sm">Search</span>
           </div>
-          <button
-            aria-label="Notifications"
-            className="flex size-10 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-700 transition hover:bg-slate-100 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800"
-            type="button"
-          >
-            <Bell className="size-4" />
-          </button>
+         
           <ThemeToggle />
         </div>
       </div>
