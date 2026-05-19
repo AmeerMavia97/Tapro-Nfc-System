@@ -110,6 +110,12 @@ export async function loginUser({ email, password }) {
     throw new Error(profileError.message)
   }
 
+  if (profile?.account_status === "blocked") {
+    await supabase.auth.signOut()
+    clearCachedAuthUser()
+    throw new Error("Your account has been blocked by admin. Please contact support.")
+  }
+
   const authData = normalizeAuthPayload({ user, profile, session })
   setCachedAuthUser(authData)
 
@@ -187,4 +193,53 @@ export async function fetchCurrentUser() {
   if (cachedAuthUser) return cachedAuthUser
 
   return refreshCurrentUser()
+}
+
+
+
+
+// ADMIN PROFILE SETTING 
+export async function getAdminProfile() {
+  const {
+    data: { user },
+    error: userError,
+  } = await supabase.auth.getUser()
+
+  if (userError || !user) {
+    throw new Error("User not found")
+  }
+
+  const { data, error } = await supabase
+    .from("profiles")
+    .select("id,full_name,email,role,account_status")
+    .eq("id", user.id)
+    .single()
+
+  if (error) throw new Error(error.message)
+
+  return data
+}
+
+export async function updateAdminProfile({ fullName }) {
+  const {
+    data: { user },
+    error: userError,
+  } = await supabase.auth.getUser()
+
+  if (userError || !user) {
+    throw new Error("User not found")
+  }
+
+  const { data, error } = await supabase
+    .from("profiles")
+    .update({
+      full_name: fullName?.trim() || null,
+    })
+    .eq("id", user.id)
+    .select("id,full_name,email,role,account_status")
+    .single()
+
+  if (error) throw new Error(error.message)
+
+  return data
 }

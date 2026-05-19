@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { Link, useNavigate } from "react-router-dom"
+import { Link, useNavigate, useSearchParams } from "react-router-dom"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { useForm } from "react-hook-form"
 import { ArrowRight, Loader2 } from "lucide-react"
@@ -13,6 +13,8 @@ import { getDashboardPath, loginUser } from "@/services/authApi"
 
 const Login = () => {
   const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
+  const redirectPath = searchParams.get("redirect")
   const queryClient = useQueryClient()
   const [serverMessage, setServerMessage] = useState("")
   const {
@@ -31,7 +33,7 @@ const Login = () => {
     onSuccess: (authData) => {
       queryClient.setQueryData(AUTH_USER_QUERY_KEY, authData)
       setServerMessage("Welcome back. You are signed in.")
-      navigate(getDashboardPath(authData.profile), { replace: true })
+      navigate(redirectPath || getDashboardPath(authData.profile), { replace: true })
     },
     onError: (error) => setServerMessage(error.message),
   })
@@ -43,7 +45,7 @@ const Login = () => {
         description="Sign in to continue managing your Tapro NFC account."
         footerText="New to Tapro?"
         footerLinkText="Create an account"
-        footerTo="/register"
+        footerTo={redirectPath ? `/register?redirect=${encodeURIComponent(redirectPath)}` : "/register"}
       >
         <form className="grid gap-5" onSubmit={handleSubmit((values) => loginMutation.mutate(values))}>
           <FormField

@@ -1,4 +1,5 @@
 import { useState } from "react"
+import { useNavigate, useSearchParams } from "react-router-dom"
 import { useMutation } from "@tanstack/react-query"
 import { useForm } from "react-hook-form"
 import { Loader2, UserPlus } from "lucide-react"
@@ -9,6 +10,9 @@ import FormField from "@/components/ui/FormField"
 import { registerUser } from "@/services/authApi"
 
 const Register = () => {
+  const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
+  const redirectPath = searchParams.get("redirect")
   const [serverMessage, setServerMessage] = useState("")
   const {
     register,
@@ -29,7 +33,10 @@ const Register = () => {
     mutationFn: registerUser,
     onSuccess: () => {
       reset()
-      setServerMessage("Account created. Check your email if confirmation is enabled.")
+      setServerMessage("Account created. Please sign in to continue activation.")
+      setTimeout(() => {
+        navigate(redirectPath ? `/login?redirect=${encodeURIComponent(redirectPath)}` : "/login", { replace: true })
+      }, 700)
     },
     onError: (error) => setServerMessage(error.message),
   })
@@ -41,7 +48,7 @@ const Register = () => {
         description="Start your Tapro NFC workspace with secure account access."
         footerText="Already have an account?"
         footerLinkText="Sign in"
-        footerTo="/login"
+        footerTo={redirectPath ? `/login?redirect=${encodeURIComponent(redirectPath)}` : "/login"}
       >
         <form
           className="grid gap-5"

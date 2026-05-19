@@ -18,6 +18,7 @@ const ConfirmationModal = ({
     cancelText = "Cancel",
     onConfirm,
     loading = false,
+    children,
 }) => {
     return (
         <AlertDialog open={open} onOpenChange={onOpenChange}>
@@ -26,6 +27,8 @@ const ConfirmationModal = ({
                     <AlertDialogTitle className={"font-head text-[21px]"}>{title}</AlertDialogTitle>
                     <AlertDialogDescription>{description}</AlertDialogDescription>
                 </AlertDialogHeader>
+
+                {children}
 
                 <AlertDialogFooter className={'border-[#e5e5e6]'}>
                     <AlertDialogCancel className={'cursor-pointer hover:bg-black hover:text-white  px-5 py-5 '} disabled={loading}>

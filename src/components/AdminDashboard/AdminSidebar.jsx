@@ -7,6 +7,7 @@ import {
   Settings,
   ShieldCheck,
   Users,
+  UserRound,
 } from "lucide-react"
 import { NavLink } from "react-router-dom"
 
@@ -15,6 +16,7 @@ const sidebarItems = [
   { label: "Codes", icon: KeyRound, path: "/admin-dashboard/codes" },
   { label: "Batches", icon: Boxes, path: "/admin-dashboard/batches" },
   { label: "Business Owners", icon: Users, path: "/admin-dashboard/business-owners" },
+  { label: "Users", icon: UserRound, path: "/admin-dashboard/users" },
   { label: "Analytics", icon: BarChart3, path: "/admin-dashboard/analytics" },
   { label: "Activity Logs", icon: Activity, path: "/admin-dashboard/activity-logs" },
   { label: "Settings", icon: Settings, path: "/admin-dashboard/settings" },

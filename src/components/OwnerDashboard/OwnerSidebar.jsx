@@ -1,16 +1,8 @@
-import { Activity, BarChart3, Building2, Boxes, LayoutDashboard, Settings, Star, Store } from "lucide-react"
+import { Store } from "lucide-react"
+import { NavLink } from "react-router-dom"
+import { ownerTabs } from "@/screens/OwnerDashboard/ownerDashboardShared"
 
-const sidebarItems = [
-  { label: "Dashboard Overview", icon: LayoutDashboard },
-  { label: "My Products", icon: Boxes },
-  { label: "Analytics", icon: BarChart3 },
-  { label: "Review Tracking", icon: Star },
-  { label: "Connected Business", icon: Building2 },
-  { label: "Settings/Profile", icon: Settings },
-  { label: "Activity / History", icon: Activity },
-]
-
-const OwnerSidebar = ({ activeTab, onTabChange }) => {
+const OwnerSidebar = () => {
   return (
     <aside className="hidden min-h-screen w-72 shrink-0 border-r border-slate-200 bg-white px-4 py-5 dark:border-slate-800 dark:bg-slate-950 lg:block">
       <div className="flex items-center gap-3 px-2">
@@ -24,24 +16,22 @@ const OwnerSidebar = ({ activeTab, onTabChange }) => {
       </div>
 
       <nav className="mt-8 space-y-1">
-        {sidebarItems.map((item) => {
+        {ownerTabs.map((item) => {
           const Icon = item.icon
-          const isActive = activeTab === item.label
-
           return (
-            <button
-              className={`flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition ${
+            <NavLink
+              className={({ isActive }) => `flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition ${
                 isActive
                   ? "bg-slate-950 text-white shadow-sm dark:bg-white dark:text-slate-950"
                   : "text-slate-600 hover:bg-slate-100 hover:text-slate-950 dark:text-slate-300 dark:hover:bg-slate-900 dark:hover:text-white"
               }`}
-              key={item.label}
-              onClick={() => onTabChange(item.label)}
-              type="button"
+              end={item.path === "/owner-dashboard"}
+              key={item.path}
+              to={item.path}
             >
               <Icon className="size-4" />
-              <span>{item.label}</span>
-            </button>
+              <span>{item.title}</span>
+            </NavLink>
           )
         })}
       </nav>
