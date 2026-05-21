@@ -7,7 +7,7 @@ const HeroSection = () => {
         <section className="relative mx-auto max-w-7xl px-5 pb-20 pt-40 lg:px-8 lg:pb-28 lg:pt-48">
             <div className="grid items-center gap-14 lg:grid-cols-2">
 
-                <div className="ml-4">
+                <div className="md:ml-4">
                     <p className="inline-flex items-center gap-2 text-xs font-bold mb-5">
                         <span className="w-7 h-7 rounded-full bg-[#d7ff3f] flex items-center font-para justify-center">
                             <Zap size={15} />

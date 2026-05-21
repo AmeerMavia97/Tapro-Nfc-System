@@ -3,7 +3,9 @@ import { Boxes, Search } from "lucide-react"
 import { useQuery } from "@tanstack/react-query"
 import AdminLayout from "@/components/AdminDashboard/AdminLayout"
 import { getProductBatches, getProducts } from "@/services/productsApi"
-import { DataTable, SectionPanel, StatusPill } from "./adminDashboardShared"
+import { DataTable } from "./adminDashboardShared"
+import { SectionPanel } from '@/components/screens/AdminDashboard/SectionPanel'
+import { StatusPill } from "@/components/ui/statusPill"
 
 const AdminBatches = () => {
   const [search, setSearch] = useState("")

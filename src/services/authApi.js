@@ -55,6 +55,36 @@ export function clearCachedAuthUser() {
   localStorage.removeItem(AUTH_CACHE_KEY)
 }
 
+
+async function getOrCreateProfile(user) {
+  const { data: profile, error } = await supabase
+    .from("profiles")
+    .select("*")
+    .eq("id", user.id)
+    .maybeSingle()
+
+  if (error) throw error
+  if (profile) return profile
+
+  const fullName = user.user_metadata?.full_name || user.user_metadata?.name || user.email?.split("@")[0] || "Business Owner"
+
+  const { data: createdProfile, error: createError } = await supabase
+    .from("profiles")
+    .insert({
+      id: user.id,
+      email: user.email,
+      full_name: fullName,
+      role: "user",
+      account_status: "active",
+    })
+    .select("*")
+    .single()
+
+  if (createError) throw createError
+
+  return createdProfile
+}
+
 export async function refreshCurrentUser() {
   const { data: sessionData } = await supabase.auth.getSession()
   const user = sessionData?.session?.user
@@ -64,13 +94,7 @@ export async function refreshCurrentUser() {
     return null
   }
 
-  const { data: profile, error } = await supabase
-    .from("profiles")
-    .select("*")
-    .eq("id", user.id)
-    .single()
-
-  if (error) throw error
+  const profile = await getOrCreateProfile(user)
 
   const authData = normalizeAuthPayload({
     user,
@@ -100,15 +124,7 @@ export async function loginUser({ email, password }) {
     throw new Error("Session not available after login")
   }
 
-  const { data: profile, error: profileError } = await supabase
-    .from("profiles")
-    .select("*")
-    .eq("id", user.id)
-    .single()
-
-  if (profileError) {
-    throw new Error(profileError.message)
-  }
+  const profile = await getOrCreateProfile(user)
 
   if (profile?.account_status === "blocked") {
     await supabase.auth.signOut()
@@ -141,6 +157,32 @@ export async function registerUser({ fullName, email, password }) {
 
   if (!data?.user || data?.user?.identities?.length === 0) {
     throw new Error("This email already exists. Please sign in instead.")
+  }
+
+  return data
+}
+
+export async function signInWithGoogle({ redirectPath } = {}) {
+  const safeRedirect = redirectPath?.startsWith("/") ? redirectPath : ""
+  const loginUrl = new URL(`${window.location.origin}/login`)
+
+  if (safeRedirect) {
+    loginUrl.searchParams.set("redirect", safeRedirect)
+  }
+
+  const { data, error } = await supabase.auth.signInWithOAuth({
+    provider: "google",
+    options: {
+      redirectTo: loginUrl.toString(),
+      queryParams: {
+        access_type: "offline",
+        prompt: "consent",
+      },
+    },
+  })
+
+  if (error) {
+    throw new Error(error.message)
   }
 
   return data

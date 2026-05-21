@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button"
 import AuthCard from "@/components/Cards/AuthCard"
 import AuthLayout from "@/Layout/AuthScreenLayout/AuthLayout"
 import FormField from "@/components/ui/FormField"
-import { registerUser } from "@/services/authApi"
+import { registerUser, signInWithGoogle } from "@/services/authApi"
 
 const Register = () => {
   const navigate = useNavigate()
@@ -41,6 +41,11 @@ const Register = () => {
     onError: (error) => setServerMessage(error.message),
   })
 
+  const googleMutation = useMutation({
+    mutationFn: () => signInWithGoogle({ redirectPath }),
+    onError: (error) => setServerMessage(error.message),
+  })
+
   return (
     <AuthLayout>
       <AuthCard
@@ -50,6 +55,22 @@ const Register = () => {
         footerLinkText="Sign in"
         footerTo={redirectPath ? `/login?redirect=${encodeURIComponent(redirectPath)}` : "/login"}
       >
+        <button
+          className="mb-5 flex h-11 w-full items-center justify-center gap-3 rounded-xl border border-slate-200 bg-white text-sm font-semibold text-slate-800 transition hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 dark:hover:bg-slate-800"
+          disabled={googleMutation.isPending}
+          onClick={() => googleMutation.mutate()}
+          type="button"
+        >
+          <span className="grid size-5 place-items-center rounded-full bg-white text-base font-bold text-slate-950">G</span>
+          Sign up with Google
+        </button>
+
+        <div className="mb-5 flex items-center gap-3">
+          <span className="h-px flex-1 bg-slate-200 dark:bg-slate-800" />
+          <span className="text-xs font-medium uppercase tracking-wide text-slate-400">or create with email</span>
+          <span className="h-px flex-1 bg-slate-200 dark:bg-slate-800" />
+        </div>
+
         <form
           className="grid gap-5"
           onSubmit={handleSubmit(({ fullName, email, password }) =>

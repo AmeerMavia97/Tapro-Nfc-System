@@ -84,7 +84,7 @@ const AdminSettings = () => {
       icon={Settings}
       description="Manage your admin profile details."
     >
-      <div className="max-w-3xl rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+      <div className="max-w-3xl  px-2.5 pt-2.5 pb-6">
         <div className="mb-6 flex items-center gap-3">
           <div className="flex size-12 items-center justify-center rounded-xl bg-slate-950 text-white dark:bg-white dark:text-slate-950">
             <UserRound className="size-5" />

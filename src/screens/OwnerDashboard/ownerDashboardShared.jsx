@@ -1,68 +1,78 @@
+import { useState } from "react"
 import { Activity, BarChart3, Building2, Boxes, LayoutDashboard, Settings, Star } from "lucide-react"
 import OwnerHeader from "@/components/OwnerDashboard/OwnerHeader"
+import OwnerMobileDrawer from "@/components/OwnerDashboard/OwnerMobileDrawer"
 import OwnerSidebar from "@/components/OwnerDashboard/OwnerSidebar"
 
 export const ownerTabs = [
   {
     title: "Dashboard Overview",
+    label: "Overview",
     icon: LayoutDashboard,
     description: "Quick view of activated products, scans, review growth, and recent activity.",
     path: "/owner-dashboard",
   },
   {
     title: "My Products",
+    label: "My Products",
     icon: Boxes,
     description: "All activated NFC/QR products connected to your business.",
     path: "/owner-dashboard/products",
   },
   {
     title: "Analytics",
+    label: "Analytics",
     icon: BarChart3,
     description: "Per-product scan performance, trends, and top performing products.",
     path: "/owner-dashboard/analytics",
   },
-  {
-    title: "Review Tracking",
-    icon: Star,
-    description: "Review redirect performance for your Google business.",
-    path: "/owner-dashboard/reviews",
-  },
-  {
-    title: "Connected Business",
-    icon: Building2,
-    description: "Business profile, Google review link, and connected product details.",
-    path: "/owner-dashboard/business",
-  },
-  {
-    title: "Settings/Profile",
-    icon: Settings,
-    description: "Manage profile name, email, password, and account preferences.",
-    path: "/owner-dashboard/settings",
-  },
+  // {
+  //   title: "Review Tracking",
+  //   label: "Reviews",
+  //   icon: Star,
+  //   description: "Review redirect performance for your Google business.",
+  //   path: "/owner-dashboard/reviews",
+  // },
+  // {
+  //   title: "Connected Business",
+  //   label: "Business",
+  //   icon: Building2,
+  //   description: "Business profile, Google review link, and connected product details.",
+  //   path: "/owner-dashboard/business",
+  // },
   {
     title: "Activity / History",
+    label: "History",
     icon: Activity,
     description: "Product activations, recent scans, and ownership history.",
     path: "/owner-dashboard/history",
   },
+  {
+    title: "Settings/Profile",
+    label: "Settings",
+    icon: Settings,
+    description: "Manage profile name, email, password, and account preferences.",
+    path: "/owner-dashboard/settings",
+  },
+
 ]
 
 export const StatusPill = ({ status }) => {
   const normalized = status || "Inactive"
   const styles = {
-    Active: "bg-emerald-50 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-300",
-    Inactive: "bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300",
-    Blocked: "bg-red-50 text-red-700 dark:bg-red-500/10 dark:text-red-300",
+    Active: "bg-emerald-50 text-emerald-700 ring-1 ring-emerald-100",
+    Inactive: "bg-slate-100 text-slate-700 ring-1 ring-slate-200",
+    Blocked: "bg-red-50 text-red-700 ring-1 ring-red-100",
   }
 
-  return <span className={`rounded-full px-2.5 py-1 text-xs font-semibold ${styles[normalized] || styles.Inactive}`}>{normalized}</span>
+  return <span className={`rounded-full px-3 py-1 text-xs font-bold ${styles[normalized] || styles.Inactive}`}>{normalized}</span>
 }
 
 export const SectionPanel = ({ children, description, title }) => (
-  <section className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+  <section className="rounded-[1.75rem] border border-slate-100 bg-white p-5 shadow-[0_14px_45px_rgba(15,23,42,0.05)]">
     <div className="mb-5">
-      <h2 className="text-lg font-semibold text-slate-950 dark:text-white">{title}</h2>
-      {description && <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">{description}</p>}
+      <h2 className="font-head text-xl font-semibold text-slate-950">{title}</h2>
+      {description && <p className="mt-1 text-sm leading-6 text-slate-500">{description}</p>}
     </div>
     {children}
   </section>
@@ -70,11 +80,10 @@ export const SectionPanel = ({ children, description, title }) => (
 
 export const ActionButton = ({ children, icon: Icon, variant = "primary", ...props }) => (
   <button
-    className={`inline-flex h-10 items-center justify-center gap-2 rounded-lg px-4 text-sm font-semibold transition disabled:opacity-60 ${
-      variant === "primary"
-        ? "bg-slate-950 text-white hover:bg-slate-800 dark:bg-white dark:text-slate-950 dark:hover:bg-slate-200"
-        : "border border-slate-200 bg-white text-slate-700 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800"
-    }`}
+    className={`inline-flex h-11 items-center justify-center gap-2 rounded-full px-5 text-sm font-bold transition disabled:cursor-not-allowed disabled:opacity-60 ${variant === "primary"
+        ? "bg-slate-950 text-white shadow-lg shadow-slate-300/70 hover:-translate-y-0.5 hover:bg-slate-800"
+        : "bg-white text-slate-700 ring-1 ring-black/5 hover:bg-[#f8fafc]"
+      }`}
     type="button"
     {...props}
   >
@@ -84,25 +93,25 @@ export const ActionButton = ({ children, icon: Icon, variant = "primary", ...pro
 )
 
 export const DataTable = ({ columns, rows, emptyText = "No records found." }) => (
-  <div className="overflow-hidden rounded-lg border border-slate-200 dark:border-slate-800">
+  <div className="overflow-hidden rounded-[1.5rem] border border-slate-100 bg-white shadow-[0_10px_30px_rgba(15,23,42,0.04)]">
     <div className="overflow-x-auto">
       <table className="w-full min-w-[640px] text-left text-sm">
-        <thead className="bg-slate-50 text-xs uppercase tracking-wide text-slate-500 dark:bg-slate-950 dark:text-slate-400">
+        <thead className="bg-[#f8fafc] text-xs uppercase tracking-wide text-slate-500">
           <tr>
             {columns.map((column) => (
-              <th className="px-4 py-3 font-semibold" key={column.key}>{column.label}</th>
+              <th className="px-5 py-4 font-bold" key={column.key}>{column.label}</th>
             ))}
           </tr>
         </thead>
-        <tbody className="divide-y divide-slate-200 dark:divide-slate-800">
+        <tbody className="divide-y divide-slate-100">
           {rows.length === 0 ? (
             <tr>
-              <td className="px-4 py-6 text-center text-slate-500 dark:text-slate-400" colSpan={columns.length}>{emptyText}</td>
+              <td className="px-5 py-7 text-center text-slate-500" colSpan={columns.length}>{emptyText}</td>
             </tr>
           ) : rows.map((row) => (
-            <tr className="text-slate-700 dark:text-slate-200" key={row.id}>
+            <tr className="text-slate-700 transition hover:bg-[#f8fafc]/80" key={row.id}>
               {columns.map((column) => (
-                <td className="px-4 py-3" key={column.key}>{column.render ? column.render(row) : row[column.key]}</td>
+                <td className="px-5 py-4" key={column.key}>{column.render ? column.render(row) : row[column.key]}</td>
               ))}
             </tr>
           ))}
@@ -113,13 +122,13 @@ export const DataTable = ({ columns, rows, emptyText = "No records found." }) =>
 )
 
 export const LoadingPanel = () => (
-  <div className="flex min-h-[300px] items-center justify-center rounded-lg border border-slate-200 bg-white text-sm font-medium text-slate-500 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-400">
+  <div className="flex min-h-[300px] items-center justify-center rounded-[1.75rem] border border-slate-100 bg-white text-sm font-bold text-slate-500 shadow-[0_14px_45px_rgba(15,23,42,0.05)]">
     Loading owner data...
   </div>
 )
 
 export const ErrorPanel = ({ message }) => (
-  <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 dark:border-red-500/20 dark:bg-red-500/10 dark:text-red-300">
+  <div className="rounded-[1.25rem] border border-red-100 bg-red-50 px-5 py-4 text-sm font-semibold text-red-700">
     {message}
   </div>
 )
@@ -127,44 +136,23 @@ export const ErrorPanel = ({ message }) => (
 const getCurrentTab = (title) => ownerTabs.find((tab) => tab.title === title) || ownerTabs[0]
 
 const OwnerLayout = ({ title = "Dashboard Overview", children }) => {
+  const [drawerOpen, setDrawerOpen] = useState(false)
   const currentTab = getCurrentTab(title)
-  const CurrentIcon = currentTab.icon
 
   return (
-    <main className="min-h-screen bg-slate-50 text-slate-950 transition-colors dark:bg-slate-950 dark:text-white">
-      <div className="flex min-h-screen">
+    <main className="min-h-screen bg-white text-slate-950">
+      <div className="relative flex min-h-screen gap-6 p-4 sm:p-6 lg:p-6">
         <OwnerSidebar />
-        <section className="flex min-w-0 flex-1 flex-col">
-          <OwnerHeader title={currentTab.title} />
-          <div className="flex-1 px-4 py-6 sm:px-6 lg:px-8">
-            <div className="mb-5 flex gap-2 overflow-x-auto pb-1 lg:hidden">
-              {ownerTabs.map((tab) => (
-                <a
-                  className={`shrink-0 rounded-lg px-3 py-2 text-sm font-medium transition ${
-                    currentTab.title === tab.title
-                      ? "bg-slate-950 text-white dark:bg-white dark:text-slate-950"
-                      : "border border-slate-200 bg-white text-slate-600 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300"
-                  }`}
-                  href={tab.path}
-                  key={tab.title}
-                >
-                  {tab.title}
-                </a>
-              ))}
-            </div>
+        <OwnerMobileDrawer open={drawerOpen} onClose={() => setDrawerOpen(false)} />
 
-            <div className="mb-6 flex flex-col gap-2">
-              <p className="text-sm font-medium uppercase tracking-[0.18em] text-slate-500 dark:text-slate-400">Owner Dashboard</p>
-              <div className="flex items-center gap-3">
-                <span className="flex size-11 items-center justify-center rounded-lg bg-slate-950 text-white dark:bg-white dark:text-slate-950">
-                  <CurrentIcon className="size-5" />
-                </span>
-                <h1 className="text-2xl font-semibold tracking-normal text-slate-950 dark:text-white sm:text-3xl">{currentTab.title}</h1>
+        <section className="min-w-0 flex-1">
+          <div className="min-h-[calc(100vh-4rem)] overflow-hidden rounded-[2.5rem] bg-white shadow-[0_28px_90px_rgba(15,23,42,0.10)] ring-1 ring-slate-100">
+            <OwnerHeader title={currentTab.title} description={currentTab.description} onMenuClick={() => setDrawerOpen(true)} />
+            <div className="px-5 py-6 sm:px-7 lg:px-8">
+              <div className="pr-4 sm:pr-5 lg:pr-3">
+                {children}
               </div>
-              <p className="max-w-2xl text-sm leading-6 text-slate-600 dark:text-slate-300">{currentTab.description}</p>
             </div>
-
-            {children}
           </div>
         </section>
       </div>

@@ -2,7 +2,9 @@ import { TrendingUp } from "lucide-react"
 import { useQuery } from "@tanstack/react-query"
 import AdminLayout from "@/components/AdminDashboard/AdminLayout"
 import { getAdminAnalytics } from "@/services/productsApi"
-import { DataTable, SectionPanel, StatusPill } from "./adminDashboardShared"
+import { DataTable } from "./adminDashboardShared"
+import { SectionPanel } from '@/components/screens/AdminDashboard/SectionPanel'
+import { StatusPill } from "@/components/ui/statusPill"
 
 const AdminAnalytics = () => {
   const { data, isLoading } = useQuery({ queryKey: ["admin-analytics"], queryFn: getAdminAnalytics })

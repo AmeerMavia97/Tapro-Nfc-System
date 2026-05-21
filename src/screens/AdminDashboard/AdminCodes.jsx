@@ -4,7 +4,10 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import AdminLayout from "@/components/AdminDashboard/AdminLayout"
 import ConfirmationModal from "@/components/Modal/ConfirmationModal"
 import { generateProducts, getPermanentUrl, getProducts } from "@/services/productsApi"
-import { ActionButton, DataTable, SectionPanel, StatusPill } from "./adminDashboardShared"
+import { ActionButton, DataTable } from "./adminDashboardShared"
+import { StatusPill } from "@/components/ui/statusPill"
+import { SectionPanel } from '@/components/screens/AdminDashboard/SectionPanel'
+
 
 const downloadCsv = (rows) => {
   const headers = ["unique_code", "permanent_url", "batch_name", "activated", "redirect_url", "created_at"]

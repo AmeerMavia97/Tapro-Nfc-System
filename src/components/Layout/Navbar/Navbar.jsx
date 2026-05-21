@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom"
+import { Link, NavLink } from "react-router-dom"
 import Logo from '@/assets/TAPro-Logo.avif'
 import { getDashboardPath } from "@/services/authApi"
 import Logout from "@/components/Layout/Logout/Logout"
@@ -27,7 +27,9 @@ const Navbar = () => {
                 <div className="flex h-20 items-center justify-between rounded-full border border-white/70 bg-white/55 px-5 shadow-[0_20px_80px_rgba(16,17,36,0.10)] backdrop-blur-2xl md:px-7">
 
                     <div>
-                        <img className="w-24 h-11.5" src={Logo} alt="" />
+                        <NavLink to={'/'}>
+                            <img className="h-11 sm:w-24 sm:h-11.5" src={Logo} alt="" />
+                        </NavLink>
                     </div>
 
 
@@ -37,10 +39,10 @@ const Navbar = () => {
                             <>
                                 <Link
                                     to={dashboardPath}
-                                    className="inline-flex items-center gap-2 rounded-full bg-[#101124] px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-[#101124]/15 transition hover:bg-black"
+                                    className="inline-flex items-center gap-2 rounded-full bg-[#101124] p-3 sm:px-5 sm:py-3 text-sm font-semibold text-white shadow-lg shadow-[#101124]/15 transition hover:bg-black"
                                 >
                                     <LayoutDashboard className="size-4" />
-                                    Dashboard
+                                    <span className="hidden sm:inline"> Dashboard </span>
                                 </Link>
 
                                 <span

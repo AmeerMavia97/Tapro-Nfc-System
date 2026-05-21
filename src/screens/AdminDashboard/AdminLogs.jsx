@@ -2,7 +2,10 @@ import { Activity } from "lucide-react"
 import { useQuery } from "@tanstack/react-query"
 import AdminLayout from "@/components/AdminDashboard/AdminLayout"
 import { getActivityLogs, getScanLogs } from "@/services/productsApi"
-import { DataTable, SectionPanel, StatusPill } from "./adminDashboardShared"
+import { DataTable } from "./adminDashboardShared"
+import { StatusPill } from "@/components/ui/statusPill"
+import { SectionPanel } from '@/components/screens/AdminDashboard/SectionPanel'
+
 
 const AdminLogs = () => {
   const { data: activityLogs = [], isLoading: activityLoading } = useQuery({ queryKey: ["activity-logs"], queryFn: getActivityLogs })

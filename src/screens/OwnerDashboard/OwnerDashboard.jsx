@@ -24,16 +24,18 @@ const OwnerDashboard = () => {
           ].map((stat) => {
             const Icon = stat.icon
             return (
-              <article className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900" key={stat.label}>
-                <div className="flex items-start justify-between gap-3">
-                  <div>
-                    <p className="text-sm font-medium text-slate-500 dark:text-slate-400">{stat.label}</p>
-                    <p className="mt-2 text-2xl font-semibold text-slate-950 dark:text-white">{stat.value}</p>
-                    <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">{stat.helper}</p>
+              <article className="rounded-[1.75rem] border border-slate-100 bg-white p-5 shadow-[0_14px_45px_rgba(15,23,42,0.05)]" key={stat.label}>
+                <div className="flex min-h-40 flex-col justify-between gap-5">
+                  <div className="flex items-center justify-between gap-3">
+                    <span className="flex size-14 items-center justify-center rounded-2xl bg-[#f3f6fb] text-slate-950">
+                      <Icon className="size-6" />
+                    </span>
+                    <p className="font-head text-4xl font-semibold text-slate-950">{stat.value}</p>
                   </div>
-                  <span className="flex size-11 items-center justify-center rounded-lg bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-200">
-                    <Icon className="size-5" />
-                  </span>
+                  <div>
+                    <p className="font-head text-2xl font-semibold leading-tight text-slate-950">{stat.label}</p>
+                    <p className="mt-2 text-sm leading-6 text-slate-500">{stat.helper}</p>
+                  </div>
                 </div>
               </article>
             )
@@ -57,15 +59,15 @@ const OwnerDashboard = () => {
           <SectionPanel title="Products Snapshot" description="Your latest connected products">
             <div className="space-y-3">
               {products.slice(0, 4).map((product) => (
-                <div className="flex items-center justify-between rounded-lg bg-slate-50 px-4 py-3 dark:bg-slate-950" key={product.id}>
+                <div className="flex items-center justify-between rounded-[1.25rem] bg-[#f8fafc] px-4 py-3" key={product.id}>
                   <div>
-                    <p className="font-medium text-slate-950 dark:text-white">{product.unique_code}</p>
-                    <p className="text-xs text-slate-500 dark:text-slate-400">{product.business_name || "No business name"}</p>
+                    <p className="font-medium text-slate-950">{product.unique_code}</p>
+                    <p className="text-xs text-slate-500">{product.business_name || "No business name"}</p>
                   </div>
                   <StatusPill status={product.activated ? "Active" : "Inactive"} />
                 </div>
               ))}
-              {products.length === 0 && <p className="text-sm text-slate-500 dark:text-slate-400">No products activated yet.</p>}
+              {products.length === 0 && <p className="text-sm text-slate-500">No products activated yet.</p>}
             </div>
           </SectionPanel>
         </div>

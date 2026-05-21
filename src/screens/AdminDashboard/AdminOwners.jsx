@@ -4,7 +4,10 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import AdminLayout from "@/components/AdminDashboard/AdminLayout"
 import ConfirmationModal from "@/components/Modal/ConfirmationModal"
 import { addProductBusinessReport, getAssignableOwners, getProductBusinessOwners, reassignProductBusinessOwner, updateProductBusinessStatus } from "@/services/productsApi"
-import { ActionButton, DataTable, SectionPanel, StatusPill } from "./adminDashboardShared"
+import { ActionButton, DataTable } from "./adminDashboardShared"
+import { StatusPill } from "@/components/ui/statusPill"
+import { SectionPanel } from '@/components/screens/AdminDashboard/SectionPanel'
+
 
 const AdminOwners = () => {
   const queryClient = useQueryClient()

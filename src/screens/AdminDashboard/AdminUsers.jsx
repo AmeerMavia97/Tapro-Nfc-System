@@ -3,7 +3,10 @@ import { Search, UserRound } from "lucide-react"
 import { useQuery } from "@tanstack/react-query"
 import AdminLayout from "@/components/AdminDashboard/AdminLayout"
 import { getAdminUsers } from "@/services/productsApi"
-import { DataTable, SectionPanel, StatusPill } from "./adminDashboardShared"
+import { DataTable } from "./adminDashboardShared"
+import { StatusPill } from "@/components/ui/statusPill"
+import { SectionPanel } from '@/components/screens/AdminDashboard/SectionPanel'
+
 
 const AdminUsers = () => {
   const [search, setSearch] = useState("")

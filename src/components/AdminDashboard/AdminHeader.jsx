@@ -1,32 +1,41 @@
-import { Bell, Menu, Search } from "lucide-react"
+import Logout from "@/components/Layout/Logout/Logout"
+import { Menu, Search } from "lucide-react"
 
-import ThemeToggle from "@/components/ui/ThemeToggle"
-
-const AdminHeader = ({ title = "Dashboard" }) => {
+const AdminHeader = ({ title = "Dashboard", description = "Comprehensive insight into TAPro platform performance and trends.", onMenuClick }) => {
   return (
-    <header className="sticky top-0 z-30 border-b border-slate-200 bg-white/90 px-4 py-4 backdrop-blur-md dark:border-slate-800 dark:bg-slate-950/90 sm:px-6">
-      <div className="flex items-center justify-between gap-4">
-        <div className="flex min-w-0 items-center gap-3">
+    <header className="border-b border-slate-100 px-5 pt-6 pb-4 sm:px-7 lg:px-8">
+      <div className="flex flex-col gap-6 xl:flex-row xl:items-center xl:justify-between">
+        <div className="flex min-w-0 items-start gap-3">
           <button
-            aria-label="Open sidebar"
-            className="flex size-10 items-center justify-center rounded-lg border border-slate-200 text-slate-700 transition hover:bg-slate-100 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-900 lg:hidden"
+            aria-label="Open menu"
+            className="mt-1 flex size-11 shrink-0 items-center justify-center rounded-2xl bg-slate-950 text-white shadow-lg shadow-slate-200 transition hover:bg-slate-800 lg:hidden"
+            onClick={onMenuClick}
             type="button"
           >
-            <Menu className="size-4" />
+            <Menu className="size-5" />
           </button>
+
           <div className="min-w-0">
-            <p className="text-sm font-medium text-slate-500 dark:text-slate-400">Admin</p>
-            <h2 className="truncate text-xl font-semibold text-slate-950 dark:text-white">{title}</h2>
+            <p className="text-xs font-head font-semibold uppercase text-slate-400">
+              Admin Workspace
+            </p>
+            <h1 className=" mt-1 font-head font-semibold  text-4xl text-slate-950 md:text-4xl">
+              {title}
+            </h1>
+         
           </div>
         </div>
 
-        <div className="flex items-center gap-2">
-          <div className="hidden h-10 w-64 items-center gap-2 rounded-lg border border-slate-200 bg-slate-50 px-3 text-slate-500 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-400 md:flex">
-            <Search className="size-4" />
-            <span className="text-sm">Search</span>
+        <div className="flex w-full gap-5 items-center xl:w-auto">
+          <div className="flex h-11.5 w-full items-center gap-3 rounded-[1.4rem] bg-[#f3f6fb] px-5 text-slate-400 ring-1 ring-slate-100 xl:w-[390px]">
+            <Search className="size-5 shrink-0" />
+            <input
+              className="h-full w-full bg-transparent text-sm font-medium outline-none placeholder:text-slate-400"
+              placeholder="Search dashboard..."
+              type="search"
+            />
           </div>
-         
-          <ThemeToggle />
+          <Logout/>
         </div>
       </div>
     </header>

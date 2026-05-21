@@ -15,7 +15,6 @@ export const logOwnerActivity = async ({ actionType, description, metadata = nul
       metadata,
     })
   } catch {
-    // Do not block owner actions if activity log insert fails because of RLS/config.
   }
 }
 

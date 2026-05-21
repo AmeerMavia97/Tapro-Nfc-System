@@ -9,7 +9,7 @@ import AuthCard from "@/components/Cards/AuthCard"
 import AuthLayout from "@/Layout/AuthScreenLayout/AuthLayout"
 import FormField from "@/components/ui/FormField"
 import { AUTH_USER_QUERY_KEY } from "@/components/hooks/useAuthUser"
-import { getDashboardPath, loginUser } from "@/services/authApi"
+import { getDashboardPath, loginUser, signInWithGoogle } from "@/services/authApi"
 
 const Login = () => {
   const navigate = useNavigate()
@@ -38,6 +38,11 @@ const Login = () => {
     onError: (error) => setServerMessage(error.message),
   })
 
+  const googleMutation = useMutation({
+    mutationFn: () => signInWithGoogle({ redirectPath }),
+    onError: (error) => setServerMessage(error.message),
+  })
+
   return (
     <AuthLayout>
       <AuthCard
@@ -47,6 +52,22 @@ const Login = () => {
         footerLinkText="Create an account"
         footerTo={redirectPath ? `/register?redirect=${encodeURIComponent(redirectPath)}` : "/register"}
       >
+        <button
+          className="mb-5 flex h-11 w-full items-center justify-center gap-3 rounded-xl border border-slate-200 bg-white text-sm font-semibold text-slate-800 transition hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 dark:hover:bg-slate-800"
+          disabled={googleMutation.isPending}
+          onClick={() => googleMutation.mutate()}
+          type="button"
+        >
+          <span className="grid size-5 place-items-center rounded-full bg-white text-base font-bold text-slate-950">G</span>
+          Continue with Google
+        </button>
+
+        <div className="mb-5 flex items-center gap-3">
+          <span className="h-px flex-1 bg-slate-200 dark:bg-slate-800" />
+          <span className="text-xs font-medium uppercase tracking-wide text-slate-400">or sign in with email</span>
+          <span className="h-px flex-1 bg-slate-200 dark:bg-slate-800" />
+        </div>
+
         <form className="grid gap-5" onSubmit={handleSubmit((values) => loginMutation.mutate(values))}>
           <FormField
             id="email"

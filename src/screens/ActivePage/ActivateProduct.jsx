@@ -257,20 +257,23 @@ const ActivateProduct = () => {
   }
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-slate-50 px-4 text-slate-950 dark:bg-slate-950 dark:text-white">
-      <div className="w-full max-w-lg rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900">
-        <div className="mb-6 flex items-center gap-3">
-          <div className="flex size-11 items-center justify-center rounded-xl bg-slate-950 text-white dark:bg-white dark:text-slate-950">
-            <ShieldCheck className="size-5" />
-          </div>
+    <main className="flex min-h-screen items-center justify-center bg-[#f7f8fb] px-4 text-slate-950">
+      <div className="w-full max-w-xl rounded-[32px] border border-slate-200/80 bg-white/80 p-6 shadow-[0_24px_80px_rgba(15,23,42,0.08)] backdrop-blur-xl">
+        <div className="mb-6 flex items-center gap-4">
+          {/* <div className="flex size-14 items-center justify-center rounded-2xl bg-slate-950 text-white shadow-lg">
+            <ShieldCheck className="size-6" />
+          </div> */}
+
           <div>
-            <h1 className="text-xl font-semibold">Activate Product</h1>
-            <p className="text-sm text-slate-500 dark:text-slate-400">Code: {product?.unique_code || cleanCode}</p>
+            <h1 className="text-2xl font-black tracking-tight">Activate Product</h1>
+            <p className="text-sm font-medium text-slate-500">
+              Code: {product?.unique_code || cleanCode}
+            </p>
           </div>
         </div>
 
         {error && (
-          <div className="mb-4 rounded-lg bg-red-50 px-4 py-3 text-sm text-red-600 dark:bg-red-500/10 dark:text-red-300">
+          <div className="mb-4 rounded-2xl border border-red-100 bg-red-50 px-4 py-3 text-sm font-semibold text-red-600">
             {error}
           </div>
         )}
@@ -278,9 +281,11 @@ const ActivateProduct = () => {
         {!error && (
           <form className="space-y-4" onSubmit={handleActivate}>
             <div>
-              <label className="mb-1 block text-sm font-medium">Business Name</label>
+              <label className="mb-2 block text-sm font-bold">
+                Business Name
+              </label>
               <input
-                className="h-11 w-full rounded-lg border border-slate-200 bg-white px-3 text-sm outline-none focus:ring-2 focus:ring-slate-300 dark:border-slate-700 dark:bg-slate-950"
+                className="h-12 w-full rounded-2xl border border-slate-200 bg-white px-4 text-sm font-medium outline-none transition focus:border-slate-950 focus:ring-4 focus:ring-slate-200"
                 placeholder="Restaurant ABC"
                 value={businessName}
                 onChange={(event) => {
@@ -293,37 +298,44 @@ const ActivateProduct = () => {
               />
             </div>
 
-            <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 dark:border-slate-800 dark:bg-slate-950">
-              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div className="rounded-3xl border border-slate-200 bg-slate-50/80 p-4 shadow-sm">
+              <div className="grid gap-4 sm:grid-cols-[1fr_auto] sm:items-center">
                 <div>
-                  <p className="text-sm font-semibold">Google Review Link</p>
-                  <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">Click the button to find and attach your Google review page automatically.</p>
+                  <p className="text-sm font-black font-head">Google Review Link</p>
+                  <p className="mt-1 max-w-sm text-sm leading-6 text-slate-500">
+                    Click the button to find and attach your Google review page automatically.
+                  </p>
                 </div>
+
                 <button
-                  className="inline-flex h-10 items-center justify-center gap-2 rounded-lg bg-blue-600 px-4 text-sm font-semibold text-white hover:bg-blue-700 disabled:opacity-60"
+                  className="inline-flex h-11 min-w-[170px] items-center justify-center gap-2 rounded-full font-head bg-blue-600 px-5 text-sm  text-white shadow-lg shadow-blue-600/20 transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60 font-semibold"
                   disabled={googleLoading || !businessName.trim()}
                   onClick={handleFindGoogleReviewLink}
                   type="button"
                 >
-                  {googleLoading ? <Loader2 className="size-4 animate-spin" /> : <Search className="size-4" />}
+                  {googleLoading ? (
+                    <Loader2 className="size-4 animate-spin" />
+                  ) : (
+                    <Search className="size-4" />
+                  )}
                   {googleLoading ? "Searching..." : "Find Google Link"}
                 </button>
               </div>
 
               {googlePlaceLabel && (
-                <div className="mt-3 rounded-lg bg-green-50 px-3 py-2 text-sm text-green-700 dark:bg-green-500/10 dark:text-green-300">
+                <div className="mt-3 rounded-2xl border border-green-100 bg-green-50 px-4 py-3 text-sm font-semibold text-green-700">
                   Connected: {googlePlaceLabel}
                 </div>
               )}
 
               {googleError && (
-                <div className="mt-3 rounded-lg bg-amber-50 px-3 py-2 text-sm text-amber-700 dark:bg-amber-500/10 dark:text-amber-300">
+                <div className="mt-3 rounded-2xl border border-amber-100 bg-amber-50 px-4 py-3 text-sm font-semibold text-amber-700">
                   {googleError}
                 </div>
               )}
 
               <button
-                className="mt-3 text-sm font-medium text-blue-600 hover:underline dark:text-blue-400"
+                className="mt-3 text-sm font-bold text-blue-600 hover:underline"
                 onClick={() => setShowManualInput((value) => !value)}
                 type="button"
               >
@@ -333,9 +345,11 @@ const ActivateProduct = () => {
 
             {showManualInput && (
               <div>
-                <label className="mb-1 block text-sm font-medium">Manual Redirect URL</label>
+                <label className="mb-2 block text-sm font-bold">
+                  Manual Redirect URL
+                </label>
                 <input
-                  className="h-11 w-full rounded-lg border border-slate-200 bg-white px-3 text-sm outline-none focus:ring-2 focus:ring-slate-300 dark:border-slate-700 dark:bg-slate-950"
+                  className="h-12 w-full rounded-2xl border border-slate-200 bg-white px-4 text-sm font-medium outline-none transition focus:border-slate-950 focus:ring-4 focus:ring-slate-200"
                   placeholder="https://search.google.com/local/writereview?placeid=..."
                   value={redirectUrl}
                   onChange={(event) => setRedirectUrl(event.target.value)}
@@ -344,11 +358,15 @@ const ActivateProduct = () => {
             )}
 
             <button
-              className="flex h-11 w-full items-center justify-center gap-2 rounded-lg bg-slate-950 font-semibold text-white hover:bg-slate-800 disabled:opacity-60 dark:bg-white dark:text-slate-950"
+              className="inline-flex w-full justify-center items-center gap-2 rounded-full bg-[#101124] px-5 py-4.5 text-sm font-semibold text-white shadow-lg shadow-[#101124]/15 transition hover:bg-black hover:bg-slate-800 disabled:cursor-not-allowed disabled:bg-slate-400"
               disabled={activating || !businessName.trim() || !redirectUrl.trim()}
               type="submit"
             >
-              {activating ? <Loader2 className="size-4 animate-spin" /> : <CheckCircle2 className="size-4" />}
+              {activating ? (
+                <Loader2 className="size-5 animate-spin" />
+              ) : (
+                <CheckCircle2 className="size-5" />
+              )}
               {activating ? "Activating..." : "Activate & Lock Product"}
             </button>
           </form>

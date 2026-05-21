@@ -1,11 +1,15 @@
 import { useAuthUser } from "@/components/hooks/useAuthUser"
 import { getDashboardPath } from "@/services/authApi"
-import { Navigate } from "react-router-dom"
+import { Navigate, useLocation } from "react-router-dom"
 
 export default function PublicOnlyRoute({ children }) {
+  const location = useLocation()
   const { data, isLoading, isFetching } = useAuthUser()
   const user = data?.user
   const profile = data?.profile
+  const searchParams = new URLSearchParams(location.search)
+  const redirectPath = searchParams.get("redirect")
+  const safeRedirectPath = redirectPath?.startsWith("/") ? redirectPath : ""
 
   if (isLoading || isFetching) {
     return (
@@ -16,7 +20,7 @@ export default function PublicOnlyRoute({ children }) {
   }
 
   if (user && profile) {
-    return <Navigate to={getDashboardPath(profile)} replace />
+    return <Navigate to={safeRedirectPath || getDashboardPath(profile)} replace />
   }
 
   return children
