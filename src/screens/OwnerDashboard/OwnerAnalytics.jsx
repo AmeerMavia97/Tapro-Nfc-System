@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query"
 import OwnerLayout, { DataTable, ErrorPanel, LoadingPanel, SectionPanel, StatusPill } from "./ownerDashboardShared"
 import { getOwnerDashboardData } from "@/services/ownerApi"
+import SimpleLineChart from "@/components/common/SimpleLineChart"
 
 const OwnerAnalytics = () => {
   const { data, isLoading, error } = useQuery({ queryKey: ["owner-dashboard-data"], queryFn: getOwnerDashboardData })
@@ -8,7 +9,6 @@ const OwnerAnalytics = () => {
   if (isLoading) return <OwnerLayout title="Analytics"><LoadingPanel /></OwnerLayout>
   if (error) return <OwnerLayout title="Analytics"><ErrorPanel message={error.message} /></OwnerLayout>
 
-  const max = Math.max(...data.sevenDays.map((day) => day.value), 1)
 
   return (
     <OwnerLayout title="Analytics">
@@ -27,19 +27,7 @@ const OwnerAnalytics = () => {
         </div>
 
         <SectionPanel title="Scan Trends Graph" description="Daily scan volume for all connected products">
-          <div className="flex h-64 items-end gap-3">
-            {data.sevenDays.map((bar) => {
-              const height = `${Math.max((bar.value / max) * 100, 8)}%`
-              return (
-                <div className="flex flex-1 flex-col items-center gap-2" key={bar.label}>
-                  <div className="flex w-full items-end rounded-t-lg bg-slate-100 dark:bg-slate-800" style={{ height }}>
-                    <div className="w-full rounded-t-lg bg-slate-950 dark:bg-white" style={{ height: "100%" }} />
-                  </div>
-                  <span className="text-xs font-medium text-slate-500 dark:text-slate-400">{bar.label}</span>
-                </div>
-              )
-            })}
-          </div>
+          <SimpleLineChart data={data.sevenDays || []} />
         </SectionPanel>
 
         <SectionPanel title="Top Performing Products">
@@ -48,7 +36,7 @@ const OwnerAnalytics = () => {
               { key: "unique_code", label: "Product" },
               { key: "total_scans", label: "Scans", render: (row) => row.total_scans || 0 },
               { key: "business_name", label: "Business", render: (row) => row.business_name || "-" },
-              { key: "status", label: "Status", render: (row) => <StatusPill status={row.activated ? "Active" : "Inactive"} /> },
+              { key: "status", label: "Status", render: (row) => <StatusPill status={data?.profile?.account_status === "blocked" || row.status === "blocked" ? "Suspended" : row.activated ? "Active" : "Inactive"} /> },
             ]}
             rows={[...data.products].sort((a, b) => Number(b.total_scans || 0) - Number(a.total_scans || 0))}
           />

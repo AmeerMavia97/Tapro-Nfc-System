@@ -55,7 +55,7 @@ const OwnerBusiness = () => {
                   </a>
                 ) : "Pending activation",
               },
-              { key: "status", label: "Status", render: (row) => row.activated ? "Active" : "Pending" },
+              { key: "status", label: "Status", render: (row) => row.status === "blocked" ? "Suspended" : row.activated ? "Active" : "Pending" },
             ]}
             rows={products}
             emptyText="No products activated yet."

@@ -1,5 +1,25 @@
 import { supabase } from "@/configuration/Supabase/supabaseClient"
 
+const getLogTimestamp = (log) => log?.timestamp || log?.created_at || null
+const getDateKey = (value) => {
+  if (!value) return null
+  const date = new Date(value)
+  if (Number.isNaN(date.getTime())) return null
+  return date.toISOString().slice(0, 10)
+}
+
+
+const getLast7DayKeys = () =>
+  Array.from({ length: 7 }).map((_, index) => {
+    const date = new Date()
+    date.setHours(12, 0, 0, 0)
+    date.setDate(date.getDate() - (6 - index))
+    return {
+      key: date.toISOString().slice(0, 10),
+      label: date.toLocaleDateString(undefined, { weekday: "short" }),
+    }
+  })
+
 const getCurrentUser = async () => {
   const { data, error } = await supabase.auth.getUser()
   if (error || !data?.user) throw new Error("User session not found")
@@ -28,8 +48,6 @@ export async function getCurrentOwnerProfile() {
     .single()
 
   if (error) throw new Error(error.message)
-  if (data?.account_status === "blocked") throw new Error("Your account is blocked by admin.")
-
   return { ...data, auth_email: user.email }
 }
 
@@ -76,9 +94,9 @@ export async function getOwnerScanLogs(limit = 200) {
 
   const { data, error } = await supabase
     .from("scan_logs")
-    .select("id,product_id,scanned_code,timestamp,device_type,browser,os,country,city,location,activation_state,redirect_result")
+    .select("id,product_id,scanned_code,timestamp,created_at,device_type,browser,os,country,city,location,activation_state,redirect_result")
     .in("product_id", productIds)
-    .order("timestamp", { ascending: false })
+    .order("created_at", { ascending: false })
     .limit(limit)
 
   if (error) throw new Error(error.message)
@@ -122,12 +140,9 @@ export async function getOwnerDashboardData() {
   const topProduct = [...products].sort((a, b) => Number(b.total_scans || 0) - Number(a.total_scans || 0))[0]
   const connectedBusinesses = new Set(products.map((product) => product.business_name).filter(Boolean)).size
 
-  const sevenDays = Array.from({ length: 7 }).map((_, index) => {
-    const date = new Date()
-    date.setDate(date.getDate() - (6 - index))
-    const key = date.toISOString().slice(0, 10)
-    const count = scanLogs.filter((log) => log.timestamp?.slice(0, 10) === key).length
-    return { label: date.toLocaleDateString(undefined, { weekday: "short" }), value: count }
+  const sevenDays = getLast7DayKeys().map(({ key, label }) => {
+    const count = scanLogs.filter((log) => getDateKey(getLogTimestamp(log)) === key).length
+    return { label, value: count }
   })
 
   return {

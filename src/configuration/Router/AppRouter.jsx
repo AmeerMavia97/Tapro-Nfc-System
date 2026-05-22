@@ -24,6 +24,7 @@ import PublicOnlyRoute from "@/configuration/Router/PublicOnlyRoute"
 import ActivateProduct from "@/screens/ActivePage/ActivateProduct"
 import PublicRedirect from "@/screens/ActivePage/PublicRedirect"
 import InvalidProduct from "@/screens/ActivePage/InvalidProduct"
+import SuspendedProduct from "@/screens/ActivePage/SuspendedProduct"
 
 const AdminProtected = ({ children }) => (
   <RoleProtectedRoute allowedRole="admin">{children}</RoleProtectedRoute>
@@ -71,6 +72,7 @@ const AppRouter = () => {
         <Route path="/admin-dashboard/settings" element={<AdminProtected><AdminSettings /></AdminProtected>} />
         <Route path="/activate/:code" element={<ActivateProduct />} />
         <Route path="/invalid-product" element={<InvalidProduct />} />
+        <Route path="/suspended-product" element={<SuspendedProduct />} />
         <Route path="/owner-dashboard" element={<RoleProtectedRoute allowedRole="user"><OwnerDashboard /></RoleProtectedRoute>} />
         <Route path="/owner-dashboard/products" element={<RoleProtectedRoute allowedRole="user"><OwnerProducts /></RoleProtectedRoute>} />
         <Route path="/owner-dashboard/analytics" element={<RoleProtectedRoute allowedRole="user"><OwnerAnalytics /></RoleProtectedRoute>} />

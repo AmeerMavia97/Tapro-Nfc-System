@@ -1,11 +1,17 @@
 import { useMemo, useState } from "react"
-import { Ban, Flag, Search, Unlock, UserPlus, Users } from "lucide-react"
+import { MoreHorizontal, Search, Users } from "lucide-react"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import AdminLayout from "@/components/AdminDashboard/AdminLayout"
 import ConfirmationModal from "@/components/Modal/ConfirmationModal"
 import { addProductBusinessReport, getAssignableOwners, getProductBusinessOwners, reassignProductBusinessOwner, updateProductBusinessStatus } from "@/services/productsApi"
-import { ActionButton, DataTable } from "./adminDashboardShared"
+import { DataTable } from "./adminDashboardShared"
 import { StatusPill } from "@/components/ui/statusPill"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 import { SectionPanel } from '@/components/screens/AdminDashboard/SectionPanel'
 
 
@@ -68,6 +74,7 @@ const AdminOwners = () => {
     const cleanSearch = search.toLowerCase()
 
     return businesses
+      .filter((business) => business.activated === true && business.status !== "inactive")
       .filter((business) => {
         const searchable = `${business.display_name || ""} ${business.display_email || ""} ${business.unique_code || ""} ${business.batch_name || ""}`.toLowerCase()
         return searchable.includes(cleanSearch)
@@ -143,20 +150,37 @@ const AdminOwners = () => {
               { key: "batch_name", label: "Batch" },
               { key: "scans", label: "Scans" },
               { key: "statusLabel", label: "Status", render: (row) => <StatusPill status={row.statusLabel} /> },
-              { key: "reports", label: "Reports" },
+              // { key: "reports", label: "Reports" },
               { key: "activatedDate", label: "Activated" },
               { key: "createdDate", label: "Created" },
               {
                 key: "actions",
                 label: "Actions",
                 render: (row) => (
-                  <div className="flex flex-wrap gap-2">
-                    <ActionButton icon={UserPlus} variant="secondary" onClick={() => openAssignModal(row)}>Reassign</ActionButton>
-                    <ActionButton icon={Flag} variant="secondary" onClick={() => openReportModal(row)}>Report</ActionButton>
-                    <ActionButton icon={row.status === "blocked" ? Unlock : Ban} variant="secondary" onClick={() => openStatusConfirm(row)}>
-                      {row.status === "blocked" ? "Unblock" : "Block"}
-                    </ActionButton>
-                  </div>
+                  <DropdownMenu >
+                    <DropdownMenuTrigger asChild>
+                      <button
+                        type="button"
+                        className="inline-flex size-9 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-600 transition hover:bg-slate-100"
+                      >
+                        <MoreHorizontal className="size-4" />
+                      </button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" className="w-44">
+                      <DropdownMenuItem onClick={() => openAssignModal(row)}>
+                        Reassign Owner
+                      </DropdownMenuItem>
+                      {/* <DropdownMenuItem onClick={() => openReportModal(row)}>
+                        Report
+                      </DropdownMenuItem> */}
+                      <DropdownMenuItem
+                        className={row.status === "blocked" ? "text-emerald-600 focus:text-emerald-600" : "text-red-600 focus:text-red-600"}
+                        onClick={() => openStatusConfirm(row)}
+                      >
+                        {row.status === "blocked" ? "Unblock" : "Block"}
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
                 ),
               },
             ]}

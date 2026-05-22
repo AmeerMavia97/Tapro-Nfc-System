@@ -89,3 +89,9 @@ h1{
 .error {
   @apply text-red-500 text-xs mt-1;
 }
+
+
+div#radix-_r_h_ {
+    background-color: white;
+    border-color: white !important;
+}

@@ -25,10 +25,6 @@ export default function RoleProtectedRoute({ children, allowedRole }) {
     return <Navigate to="/login" replace />
   }
 
-  if (profile.account_status === "blocked") {
-    return <Navigate to="/login" replace />
-  }
-
   if (profile.role !== allowedRole) {
     return <Navigate to={getDashboardPath(profile)} replace />
   }

@@ -5,11 +5,11 @@ import { getAdminAnalytics } from "@/services/productsApi"
 import { DataTable } from "./adminDashboardShared"
 import { SectionPanel } from '@/components/screens/AdminDashboard/SectionPanel'
 import { StatusPill } from "@/components/ui/statusPill"
+import SimpleLineChart from "@/components/common/SimpleLineChart"
 
 const AdminAnalytics = () => {
   const { data, isLoading } = useQuery({ queryKey: ["admin-analytics"], queryFn: getAdminAnalytics })
 
-  const maxDayValue = Math.max(...(data?.sevenDays || []).map((item) => item.value), 1)
 
   return (
     <AdminLayout title="Analytics" icon={TrendingUp} description="Live analytics from products, owners, scans, and batches.">
@@ -32,20 +32,7 @@ const AdminAnalytics = () => {
           </div>
 
           <SectionPanel title="Last 7 Days Scan Trends" description="Scan logs grouped by day.">
-            <div className="flex h-64 items-end gap-3">
-              {(data?.sevenDays || []).map((bar) => {
-                const height = `${Math.max((bar.value / maxDayValue) * 100, bar.value ? 8 : 3)}%`
-                return (
-                  <div className="flex flex-1 flex-col items-center gap-2" key={bar.label}>
-                    <div className="flex h-full w-full items-end rounded-t-lg bg-slate-100 dark:bg-slate-800">
-                      <div className="w-full rounded-t-lg bg-slate-950 dark:bg-white" style={{ height }} />
-                    </div>
-                    <span className="text-xs font-medium text-slate-500 dark:text-slate-400">{bar.label}</span>
-                    <span className="text-xs text-slate-400">{bar.value}</span>
-                  </div>
-                )
-              })}
-            </div>
+            <SimpleLineChart data={data?.sevenDays || []} />
           </SectionPanel>
 
           <SectionPanel title="Most Scanned Products" description="Products ordered by scan count.">

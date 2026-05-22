@@ -15,7 +15,7 @@ const OwnerProducts = () => {
         <DataTable
           columns={[
             { key: "unique_code", label: "Product Code" },
-            { key: "status", label: "Status", render: (row) => <StatusPill status={row.activated ? "Active" : "Inactive"} /> },
+            { key: "status", label: "Status", render: (row) => <StatusPill status={row?.profile?.account_status === "blocked" || row.status === "blocked" ? "Suspended" : row.activated ? "Active" : "Inactive"} /> },
             { key: "business_name", label: "Business", render: (row) => row.business_name || "-" },
             { key: "activation_time", label: "Activation Date", render: (row) => row.activation_time ? new Date(row.activation_time).toLocaleDateString() : "Pending" },
             { key: "total_scans", label: "Total Scans", render: (row) => row.total_scans || 0 },

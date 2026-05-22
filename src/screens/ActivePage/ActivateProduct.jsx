@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 import { useNavigate, useParams } from "react-router-dom"
-import { CheckCircle2, Loader2, Search, ShieldCheck } from "lucide-react"
+import { CheckCircle2, Loader2, MapPin, Search, ShieldCheck } from "lucide-react"
 import { supabase } from "@/configuration/Supabase/supabaseClient"
 
 const normalizeCode = (code) => String(code || "").trim().toUpperCase()
@@ -70,6 +70,61 @@ const findGoogleReviewUrl = async (query) => {
   })
 }
 
+const getGooglePlaceDetails = async (placeId) => {
+  if (!placeId) throw new Error("Google place id is missing.")
+
+  const google = await loadGooglePlaces()
+  const container = document.createElement("div")
+  const service = new google.maps.places.PlacesService(container)
+
+  return new Promise((resolve, reject) => {
+    service.getDetails(
+      {
+        placeId,
+        fields: ["place_id", "name", "formatted_address"],
+      },
+      (place, status) => {
+        if (status !== google.maps.places.PlacesServiceStatus.OK || !place) {
+          reject(new Error("Google business details not found. Please enter the review URL manually."))
+          return
+        }
+
+        resolve({
+          placeId: place.place_id,
+          name: place.name,
+          address: place.formatted_address,
+          reviewUrl: `https://search.google.com/local/writereview?placeid=${place.place_id}`,
+        })
+      }
+    )
+  })
+}
+
+const getGoogleSuggestions = async (query) => {
+  if (!query?.trim() || query.trim().length < 2) return []
+
+  const google = await loadGooglePlaces()
+  const service = new google.maps.places.AutocompleteService()
+
+  return new Promise((resolve) => {
+    service.getPlacePredictions(
+      {
+        input: query.trim(),
+        types: ["establishment"],
+      },
+      (predictions, status) => {
+        if (status !== google.maps.places.PlacesServiceStatus.OK || !predictions?.length) {
+          resolve([])
+          return
+        }
+
+        resolve(predictions)
+      }
+    )
+  })
+}
+
+
 const ActivateProduct = () => {
   const { code } = useParams()
   const navigate = useNavigate()
@@ -87,6 +142,52 @@ const ActivateProduct = () => {
   const [googlePlaceId, setGooglePlaceId] = useState("")
   const [googlePlaceLabel, setGooglePlaceLabel] = useState("")
   const [showManualInput, setShowManualInput] = useState(false)
+  const [suggestions, setSuggestions] = useState([])
+  const [suggestionsLoading, setSuggestionsLoading] = useState(false)
+  const [suggestionsTouched, setSuggestionsTouched] = useState(false)
+
+  useEffect(() => {
+    if (!suggestionsTouched || !businessName.trim() || businessName.trim().length < 2) {
+      setSuggestions([])
+      return
+    }
+
+    const timeout = window.setTimeout(async () => {
+      try {
+        setSuggestionsLoading(true)
+        const results = await getGoogleSuggestions(businessName)
+        setSuggestions(results)
+      } catch {
+        setSuggestions([])
+      } finally {
+        setSuggestionsLoading(false)
+      }
+    }, 350)
+
+    return () => window.clearTimeout(timeout)
+  }, [businessName, suggestionsTouched])
+
+  const handleSelectSuggestion = async (suggestion) => {
+    setGoogleLoading(true)
+    setGoogleError("")
+
+    try {
+      setBusinessName(suggestion.structured_formatting?.main_text || suggestion.description)
+      setSuggestions([])
+      setSuggestionsTouched(false)
+
+      const result = await getGooglePlaceDetails(suggestion.place_id)
+      setRedirectUrl(result.reviewUrl)
+      setGooglePlaceId(result.placeId)
+      setGooglePlaceLabel(`${result.name}${result.address ? `, ${result.address}` : ""}`)
+      setShowManualInput(false)
+    } catch (err) {
+      setGoogleError(err.message)
+      setShowManualInput(true)
+    } finally {
+      setGoogleLoading(false)
+    }
+  }
 
   useEffect(() => {
     const loadProduct = async () => {
@@ -280,7 +381,7 @@ const ActivateProduct = () => {
 
         {!error && (
           <form className="space-y-4" onSubmit={handleActivate}>
-            <div>
+            <div className="relative">
               <label className="mb-2 block text-sm font-bold">
                 Business Name
               </label>
@@ -293,9 +394,40 @@ const ActivateProduct = () => {
                   setRedirectUrl("")
                   setGooglePlaceId("")
                   setGooglePlaceLabel("")
+                  setSuggestionsTouched(true)
                 }}
                 required
               />
+
+              {suggestionsTouched && (suggestionsLoading || suggestions.length > 0) && (
+                <div className="absolute left-0 right-0 z-50 mt-2 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-xl">
+                  {suggestionsLoading && (
+                    <div className="flex items-center gap-2 px-4 py-3 text-sm font-semibold text-slate-500">
+                      <Loader2 className="size-4 animate-spin" />
+                      Searching Google businesses...
+                    </div>
+                  )}
+
+                  {!suggestionsLoading && suggestions.map((suggestion) => (
+                    <button
+                      key={suggestion.place_id}
+                      type="button"
+                      className="flex w-full items-start gap-3 px-4 py-3 text-left text-sm transition hover:bg-slate-50"
+                      onClick={() => handleSelectSuggestion(suggestion)}
+                    >
+                      <MapPin className="mt-0.5 size-4 shrink-0 text-blue-600" />
+                      <span>
+                        <span className="block font-bold text-slate-950">
+                          {suggestion.structured_formatting?.main_text || suggestion.description}
+                        </span>
+                        <span className="block text-xs text-slate-500">
+                          {suggestion.structured_formatting?.secondary_text || suggestion.description}
+                        </span>
+                      </span>
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
 
             <div className="rounded-3xl border border-slate-200 bg-slate-50/80 p-4 shadow-sm">

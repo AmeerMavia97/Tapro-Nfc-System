@@ -76,7 +76,7 @@ const OwnerSettings = () => {
               </div>
               <div>
                 <label className="mb-1 block text-sm font-medium">Account Status</label>
-                <input className="h-11 w-full cursor-not-allowed rounded-lg border border-slate-200 bg-slate-100 px-3 text-sm text-slate-500 outline-none dark:border-slate-700 dark:bg-slate-800" value={profile?.account_status || "active"} disabled />
+                <input className="h-11 w-full cursor-not-allowed rounded-lg border border-slate-200 bg-slate-100 px-3 text-sm text-slate-500 outline-none dark:border-slate-700 dark:bg-slate-800" value={profile?.account_status === "blocked" ? "Suspended" : "Active"} disabled />
               </div>
             </div>
 

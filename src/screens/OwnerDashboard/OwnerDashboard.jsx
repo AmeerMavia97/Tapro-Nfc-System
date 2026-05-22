@@ -15,11 +15,10 @@ const OwnerDashboard = () => {
   return (
     <OwnerLayout title="Dashboard Overview">
       <div className="space-y-6">
-        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
           {[
             { label: "Products Activated", value: data.activeProductsCount, helper: `${data.pendingProductsCount} pending activation`, icon: QrCode },
             { label: "Total Scans", value: data.totalScans, helper: "Across all your products", icon: Eye },
-            { label: "Top Product", value: data.topProduct?.unique_code || "-", helper: `${data.topProduct?.total_scans || 0} scans`, icon: Star },
             { label: "Connected Business", value: data.connectedBusinesses, helper: "Business profiles linked", icon: Store },
           ].map((stat) => {
             const Icon = stat.icon
@@ -42,14 +41,14 @@ const OwnerDashboard = () => {
           })}
         </div>
 
-        <div className="grid gap-6 xl:grid-cols-[1fr_0.8fr]">
+        <div className="grid gap-6 ">
           <SectionPanel title="Recent Scan Activity" description="Latest scans from your activated products">
             <DataTable
               columns={[
                 { key: "scanned_code", label: "Code" },
                 { key: "device_type", label: "Device" },
                 { key: "redirect_result", label: "Result" },
-                { key: "timestamp", label: "Time", render: (row) => row.timestamp ? new Date(row.timestamp).toLocaleString() : "-" },
+                { key: "timestamp", label: "Time", render: (row) => (row.timestamp || row.created_at) ? new Date(row.timestamp || row.created_at).toLocaleString() : "-" },
               ]}
               rows={recentLogs}
               emptyText="No scans yet."
@@ -64,7 +63,7 @@ const OwnerDashboard = () => {
                     <p className="font-medium text-slate-950">{product.unique_code}</p>
                     <p className="text-xs text-slate-500">{product.business_name || "No business name"}</p>
                   </div>
-                  <StatusPill status={product.activated ? "Active" : "Inactive"} />
+                  <StatusPill status={data?.profile?.account_status === "blocked" || product.status === "blocked" ? "Suspended" : product.activated ? "Active" : "Inactive"} />
                 </div>
               ))}
               {products.length === 0 && <p className="text-sm text-slate-500">No products activated yet.</p>}

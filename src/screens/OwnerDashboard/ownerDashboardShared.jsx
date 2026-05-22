@@ -63,6 +63,7 @@ export const StatusPill = ({ status }) => {
     Active: "bg-emerald-50 text-emerald-700 ring-1 ring-emerald-100",
     Inactive: "bg-slate-100 text-slate-700 ring-1 ring-slate-200",
     Blocked: "bg-red-50 text-red-700 ring-1 ring-red-100",
+    Suspended: "bg-red-50 text-red-700 ring-1 ring-red-100",
   }
 
   return <span className={`rounded-full px-3 py-1 text-xs font-bold ${styles[normalized] || styles.Inactive}`}>{normalized}</span>
