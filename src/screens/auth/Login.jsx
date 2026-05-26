@@ -1,13 +1,14 @@
 import { useState } from "react"
 import { Link, useNavigate, useSearchParams } from "react-router-dom"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
-import { useForm } from "react-hook-form"
+import { Controller, useForm } from "react-hook-form"
 import { ArrowRight, Loader2 } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import AuthCard from "@/components/Cards/AuthCard"
 import AuthLayout from "@/Layout/AuthScreenLayout/AuthLayout"
 import FormField from "@/components/ui/FormField"
+import PinCodeInput from "@/components/ui/PinCodeInput"
 import { AUTH_USER_QUERY_KEY } from "@/components/hooks/useAuthUser"
 import { getDashboardPath, loginUser, signInWithGoogle } from "@/services/authApi"
 
@@ -19,12 +20,13 @@ const Login = () => {
   const [serverMessage, setServerMessage] = useState("")
   const {
     register,
+    control,
     handleSubmit,
     formState: { errors },
   } = useForm({
     defaultValues: {
       email: "",
-      password: "",
+      pin: "",
     },
   })
 
@@ -32,7 +34,7 @@ const Login = () => {
     mutationFn: loginUser,
     onSuccess: (authData) => {
       queryClient.setQueryData(AUTH_USER_QUERY_KEY, authData)
-      setServerMessage("Welcome back. You are signed in.")
+      setServerMessage("Welcome back. You are signed in with PIN.")
       navigate(redirectPath || getDashboardPath(authData.profile), { replace: true })
     },
     onError: (error) => setServerMessage(error.message),
@@ -47,7 +49,7 @@ const Login = () => {
     <AuthLayout>
       <AuthCard
         title="Welcome back"
-        description="Sign in to continue managing your Tapro NFC account."
+        description="Sign in with your email and 6 digit PIN to manage your Tapro NFC account."
         footerText="New to Tapro?"
         footerLinkText="Create an account"
         footerTo={redirectPath ? `/register?redirect=${encodeURIComponent(redirectPath)}` : "/register"}
@@ -64,11 +66,11 @@ const Login = () => {
 
         <div className="mb-5 flex items-center gap-3">
           <span className="h-px flex-1 bg-slate-200 dark:bg-slate-800" />
-          <span className="text-xs font-medium uppercase tracking-wide text-slate-400">or sign in with email</span>
+          <span className="text-xs font-medium uppercase tracking-wide text-slate-400">or sign in with PIN</span>
           <span className="h-px flex-1 bg-slate-200 dark:bg-slate-800" />
         </div>
 
-        <form className="grid gap-5" onSubmit={handleSubmit((values) => loginMutation.mutate(values))}>
+        <form className="grid gap-5" onSubmit={handleSubmit(({ email, pin }) => loginMutation.mutate({ email, password: pin }))}>
           <FormField
             id="email"
             label="Email address"
@@ -87,24 +89,35 @@ const Login = () => {
           <div className="grid gap-2">
             <div className="flex items-center justify-between gap-3">
               <label className="text-sm font-medium leading-none text-slate-950 dark:text-slate-100" htmlFor="password">
-                Password
+                PIN
               </label>
              
             </div>
-            <FormField
-              id="password"
-              label=""
-              type="password"
-              placeholder="Enter your password"
-              error={errors.password}
-              registration={register("password", {
-                required: "Password is required",
-              })}
+            <Controller
+              control={control}
+              name="pin"
+              rules={{
+                required: "PIN is required",
+                pattern: {
+                  value: /^\d{6}$/,
+                  message: "PIN must be exactly 6 digits",
+                },
+              }}
+              render={({ field }) => (
+                <PinCodeInput
+                  id="pin"
+                  label=""
+                  value={field.value}
+                  onChange={field.onChange}
+                  error={errors.pin}
+                  helper="Enter your 6 digit PIN to access your dashboard."
+                />
+              )}
             />
 
             <div className="flex items-end justify-end gap-3 mt-1">
               <Link className="text-sm font-medium text-slate-700 hover:text-slate-950 dark:text-slate-300 dark:hover:text-white" to="/reset-password">
-                Forgot password?
+                Forgot PIN?
               </Link>
             </div>
           </div>

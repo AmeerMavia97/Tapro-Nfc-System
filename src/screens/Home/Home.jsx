@@ -5,6 +5,7 @@ import Features from "@/components/screens/Home/Features";
 import HeroSection from "@/components/screens/Home/HeroSection";
 import CustomerReview from "@/components/screens/Home/CustomerReview";
 import DashboardOverview from "@/components/screens/Home/DashboardOverview";
+import { CheckCircle2 } from "lucide-react";
 
 const Home = () => {
 
@@ -30,8 +31,11 @@ const Home = () => {
                 <CustomerReview></CustomerReview>
             </div>
 
+            
+
             <Footer></Footer>
         </main>
+
     );
 };
 
